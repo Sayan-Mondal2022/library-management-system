@@ -1,51 +1,34 @@
 package com.library.service;
 
-// Import the User and Account class
-import com.library.models.Account;
 import com.library.models.User;
-
-// Import the AccountDao and UserDao class for creating the Account and User in the DB
 import com.library.dao.UserDao;
-import com.library.dao.AccountDao;
-
-// Import the RegistrationRequest class from DTO
 import com.library.dto.RegistrationRequest;
+import com.library.util.PasswordUtil;
 
 
 public class RegistrationService {
     private UserDao userDao = new UserDao();
-    private AccountDao accountDao = new AccountDao();
 
     public void registerUser(RegistrationRequest request) {
-
-        // First Create User
-        User user = new User();
-
-        user.setUserName(request.getUserName());
-        user.setAddress(request.getAddress());
-        user.setEmail(request.getEmail());
-        user.setPhoneNo(request.getPhoneNo());
-
-        // returns generated ID
-        int userId = userDao.save(user);
+        // Get the data.
+        String user_name = request.getUserName();
+        String address = request.getAddress();
+        String email = request.getEmail();
+        String phone_no = request.getPhoneNo();
+        String user_type = request.getUserType();
+        String hashedPassword = PasswordUtil.hashPassword(request.getPasswordHash());
 
 
-        // Second step Create Account
-        Account account = new Account();
+        // Create the user using the Constructor.
+        User user = new User(
+                user_name,
+                address,
+                phone_no,
+                email,
+                hashedPassword,
+                user_type
+        );
 
-        account.setUserId(userId);
-        account.setAccountType(request.getAccountType());
-
-        String hashedPassword = hashPassword(request.getPassword());
-        account.setPasswordHash(hashedPassword);
-
-        accountDao.save(account);
-    }
-
-    private String hashPassword(String password) {
-        // Return hased password (Add logic later)
-        String hashedPassword = password;
-
-        return hashedPassword;
+        userDao.save(user);
     }
 }
