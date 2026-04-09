@@ -5,15 +5,38 @@ import com.library.dto.RegistrationRequest;
 import java.util.Scanner;
 
 public class InputHandler {
-    public static LoginRequest getLoginDetails(){
-        // Add the code..
+    public static Scanner sc = new Scanner(System.in);
 
-        return new LoginRequest();
+    public static LoginRequest getLoginDetails(){
+        String email, password;
+
+        System.out.println("\n" + "=".repeat(30));
+        System.out.println("Enter your Login Credentials\n");
+
+        System.out.println("Enter the Email Id: ");
+        email = sc.nextLine().trim();
+
+        if (email.isEmpty())
+            throw new RuntimeException("Email can't be empty");
+        else if (email.length() < 5 || !email.contains("@"))
+            throw new RuntimeException("Invalid Email id");
+
+        System.out.println("\nEnter the password: ");
+        password = sc.nextLine().trim();
+
+        if (password.isEmpty())
+            throw new RuntimeException("Password can't be empty");
+        else if (password.length() < 6)
+            throw new RuntimeException("Password length is not satisfied");
+
+        System.out.println("\n\nYour Login Credentials are:");
+        System.out.println("Email Id: " + email);
+        System.out.println("Password: " + password);
+
+        return new LoginRequest(email, password);
     }
 
     public static RegistrationRequest getUserInput(){
-        Scanner sc = new Scanner(System.in);
-
         String user_name, phone_no, address;
         String email, password, user_type;
         int user_type_choice;
@@ -29,8 +52,7 @@ public class InputHandler {
             throw new RuntimeException("User name length should be more than 1 character");
 
         System.out.println("\nEnter the phone number (1234567891, should not begin with +91!): ");
-        phone_no = sc.next().trim();
-        sc.nextLine();
+        phone_no = sc.nextLine().trim();
 
         if (phone_no.isEmpty())
             throw new RuntimeException("Phone number can't be empty");
@@ -49,7 +71,7 @@ public class InputHandler {
             throw new RuntimeException("Address should be valid!");
 
         System.out.println("\nEnter the Email Id (sample@email.com): ");
-        email = sc.next().trim();
+        email = sc.nextLine().trim();
 
         if (email.isEmpty())
             throw new RuntimeException("Email can't be empty");
@@ -57,7 +79,7 @@ public class InputHandler {
             throw new RuntimeException("Invalid Email id");
 
         System.out.println("\nEnter the Password (should be minimum of 6 chars): ");
-        password = sc.next().trim();
+        password = sc.nextLine().trim();
 
         if (password.isEmpty())
             throw new RuntimeException("Password can't be empty");
@@ -83,8 +105,7 @@ public class InputHandler {
         System.out.println("Password: " + "*".repeat(password.length()));
         System.out.println("User Type: " + user_type);
         System.out.println("\nThe following data will be stored in the DB!");
-        System.out.println("=".repeat(40) + "\n");
 
-        return new RegistrationRequest(user_name, address, email, phone_no, password, user_type);
+        return new RegistrationRequest(user_name, address, email, phone_no, user_type, password);
     }
 }

@@ -16,7 +16,7 @@ public class RegistrationService {
         String email = request.getEmail();
         String phone_no = request.getPhoneNo();
         String user_type = request.getUserType();
-        String hashedPassword = PasswordUtil.hashPassword(request.getPasswordHash());
+        String hashedPassword = PasswordUtil.hashPassword(request.getPassword());
 
 
         // Create the user using the Constructor.

@@ -48,4 +48,33 @@ public class UserDao {
             }
         }
     }
+
+    public User getUser(String email) {
+        String sqlQuery = "SELECT * FROM Users WHERE email = ? LIMIT 1";
+
+        String user_name, user_type, address, phone_no, hashed_password;
+        int user_id;
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlQuery)) {
+            ps.setString(1,email);
+
+            ResultSet res = ps.executeQuery();
+            if (!res.next()) {
+                throw new RuntimeException("User not found");
+            }
+
+            return new User(
+                    res.getInt("user_id"),
+                    res.getString("user_name"),
+                    res.getString("address"),
+                    res.getString("phone_no"),
+                    email,
+                    res.getString("password_hash"),
+                    res.getString("user_type")
+            );
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
