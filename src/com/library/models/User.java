@@ -50,7 +50,7 @@ public class User {
         return this.password_hash;
     }
 
-    public String getUser_type() {
+    public String getUserType() {
         return this.user_type;
     }
 }

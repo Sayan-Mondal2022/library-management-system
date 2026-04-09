@@ -1,9 +1,16 @@
 package com.library.util;
 
+import com.library.dto.LoginRequest;
 import com.library.dto.RegistrationRequest;
 import java.util.Scanner;
 
 public class InputHandler {
+    public static LoginRequest getLoginDetails(){
+        // Add the code..
+
+        return new LoginRequest();
+    }
+
     public static RegistrationRequest getUserInput(){
         Scanner sc = new Scanner(System.in);
 
@@ -67,7 +74,7 @@ public class InputHandler {
         else user_type = "Member";
 
         // Displaying the USER Details at last:
-        System.out.println("\n" + "=".repeat(20));
+        System.out.println("\n" + "=".repeat(30));
         System.out.println("The Entered user details are:");
         System.out.println("\nUser name: " + user_name);
         System.out.println("Phone Number: " + phone_no);
@@ -75,7 +82,8 @@ public class InputHandler {
         System.out.println("Email Id: " + email);
         System.out.println("Password: " + "*".repeat(password.length()));
         System.out.println("User Type: " + user_type);
-        System.out.println("The following data will be stored in the DB!\n");
+        System.out.println("\nThe following data will be stored in the DB!");
+        System.out.println("=".repeat(40) + "\n");
 
         return new RegistrationRequest(user_name, address, email, phone_no, password, user_type);
     }
