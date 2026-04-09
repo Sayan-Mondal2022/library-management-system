@@ -2,13 +2,12 @@ package com.library.dao;
 
 import com.library.db.DBConnection;
 import com.library.models.Book;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 
 public class BookDao {
-    public void insertBook(Book book) {
+    public void librarianAddBook(Book book) throws Exception{
         // INSERT QUERY for BOOKS Table.
         String sql = "INSERT INTO books (isbn, title, author, genre) VALUES (?, ?, ?, ?)";
 
@@ -23,7 +22,15 @@ public class BookDao {
 
             System.out.println("Database Updated!");
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+    }
+
+    public void librarianUpdateBook(){
+        // SQL query to perform the update
+    }
+
+    public void librarianRemoveBook(){
+        // SQL query to perform the delete
     }
 }

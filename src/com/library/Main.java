@@ -18,6 +18,7 @@ public class Main {
 
             while (true) {
                 try {
+                    System.out.println("\n" + "=".repeat(30));
                     request = InputHandler.getLoginDetails();
                     break;
                 } catch (RuntimeException e) {
@@ -67,6 +68,7 @@ public class Main {
 
                     while (true) {
                         try {
+                            System.out.println("\n" + "=".repeat(30));
                             request = InputHandler.getUserInput();
                             break;
                         } catch (RuntimeException e) {

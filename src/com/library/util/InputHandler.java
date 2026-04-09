@@ -10,7 +10,6 @@ public class InputHandler {
     public static LoginRequest getLoginDetails(){
         String email, password;
 
-        System.out.println("\n" + "=".repeat(30));
         System.out.println("Enter your Login Credentials\n");
 
         System.out.println("Enter the Email Id: ");
@@ -96,7 +95,6 @@ public class InputHandler {
         else user_type = "Member";
 
         // Displaying the USER Details at last:
-        System.out.println("\n" + "=".repeat(30));
         System.out.println("The Entered user details are:");
         System.out.println("\nUser name: " + user_name);
         System.out.println("Phone Number: " + phone_no);
