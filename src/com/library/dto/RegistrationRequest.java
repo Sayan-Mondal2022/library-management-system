@@ -1,32 +1,31 @@
 package com.library.dto;
 
 public class RegistrationRequest {
-    // This is for User Class
-    private String userName, address, email, phoneNo;
+    // This is for user basic details.
+    private String user_name, address, phone_no;
 
-    // This will be for Account Class
-    private String accountType, passwordHash;
+    // This will be used for user Login and Giving access control.
+    private String email, user_type, password_hash;
 
 
     // Using a Constructor to assign the values all at the same time, as these values won't get changed.
-    public RegistrationRequest(String userName, String address, String email, String phoneNo, String accountType, String passwordHash){
-        this.userName = userName;
+    public RegistrationRequest(String userName, String address, String email, String phoneNo, String user_type, String password_hash){
+        this.user_name = userName;
         this.address = address;
         this.email = email;
-        this.phoneNo = phoneNo;
+        this.phone_no = phoneNo;
 
-        this.accountType = accountType;
-        this.passwordHash = passwordHash;
+        this.user_type = user_type;
+        this.password_hash = password_hash;
     }
-
 
     // Getters for User
     public String getPhoneNo() {
-        return this.phoneNo;
+        return this.phone_no;
     }
 
     public String getUserName() {
-        return this.userName;
+        return this.user_name;
     }
 
     public String getAddress() {
@@ -37,12 +36,11 @@ public class RegistrationRequest {
         return this.email;
     }
 
-    // Getters for Account
     public String getPasswordHash() {
-        return this.passwordHash;
+        return this.password_hash;
     }
 
-    public String getAccountType() {
-        return this.accountType;
+    public String getUserType() {
+        return this.user_type;
     }
 }
