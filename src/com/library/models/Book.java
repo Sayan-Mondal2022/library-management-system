@@ -11,6 +11,7 @@ public class Book {
         this.author = author;
     }
 
+    // Getters to access the Private variables
     public int getIsbn() {
         return this.isbn;
     }
@@ -26,5 +27,4 @@ public class Book {
     public String getGenre(){
         return this.genre;
     }
-
 }
