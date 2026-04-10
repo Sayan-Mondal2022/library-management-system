@@ -8,8 +8,12 @@ import com.library.dto.RegistrationRequest;
 import com.library.models.User;
 import com.library.service.LoginService;
 import com.library.service.RegistrationService;
+import com.library.util.ConsoleView;
 import com.library.util.InputHandler;
+import com.library.util.MenuController;
 
+import java.io.Console;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
@@ -104,7 +108,7 @@ public class Main {
 
 
             if (user_data != null) {
-                System.out.println("\n\n"+ "=".repeat(50));
+                System.out.println("\n\n" + "=".repeat(50));
 
                 System.out.println("\nWELCOME TO LIBRARY MANAGEMENT SYSTEM!!");
 
@@ -114,69 +118,81 @@ public class Main {
                 System.out.println("\n" + "=".repeat(50));
 
                 if (user_data.getUserType().equalsIgnoreCase("librarian")) {
-                    System.out.println("\nEnter 101\t-> To list all actions that a Librarian can perform");
-                    // These will be the Operations that is Accessible only to the Librarian.
-                    System.out.println("Enter 1\t-> To Show ALl books");
-                    System.out.println("Enter 2\t-> To Show Only Deleted books");
-                    System.out.println("Enter 3\t-> Add a New Book");
-                    System.out.println("Enter 4\t-> Update a Book");
-                    System.out.println("Enter 5\t-> Delete a Book");
-                    System.out.println("Enter 6\t-> To show all Users");
-                    System.out.println("Enter 7\t-> To show all Members");
+                    while (user_data != null) {
+                        System.out.println("\nEnter 101\t-> To list all actions that a Librarian can perform");
+                        // These will be the Operations that is Accessible only to the Librarian.
+                        System.out.println("Enter 1\t-> To Show ALl books");
+                        System.out.println("Enter 2\t-> To Show Only Deleted books");
+                        System.out.println("Enter 3\t-> Add a New Book");
+                        System.out.println("Enter 4\t-> Update a Book");
+                        System.out.println("Enter 5\t-> Delete a Book");
+                        System.out.println("Enter 6\t-> To show all Users");
+                        System.out.println("Enter 7\t-> To show all Members");
+                        System.out.println("Enter 8\t-> To show all Librarians");
+                        System.out.println("Enter 100\t-> To logout");
 
-                    System.out.print("\nPlease enter your choice: ");
-                    int user_choice = sc.nextInt();
-                    sc.nextLine();
 
-                    BookDto book_dto = new BookDto();
-                    BookDao book_dao = new BookDao();
+                        System.out.print("\nPlease enter your choice: ");
+                        int user_choice = sc.nextInt();
+                        sc.nextLine();
 
-                    if (user_choice == 3) {
-                        // This block will be used to add a book into my DB
+                        if (user_choice == 1) {
+                            // List all the books (Which are not deleted)
+                            ConsoleView.displayBooks("allbooks");
 
-                        System.out.println("\n" + "-".repeat(50));
-                        Book book_data = book_dto.getBookDetails();
-                        try {
-                            book_dao.librarianAddBook(book_data);
-                        } catch (Exception e) {
-                            System.out.println("Error: " + e.getMessage());
+                        } else if (user_choice == 2) {
+                            // List only the Deleted Books
+                            ConsoleView.displayBooks("deleted");
+
+                        } else if (user_choice == 3) {
+                            // This block will be used to add a book into my DB
+                            MenuController.insertBook();
+
+                        } else if (user_choice == 4) {
+                            // This block will be to update all the books.
+                            MenuController.updateBook();
+
+                        } else if (user_choice == 5) {
+                            // This will be meant to delete the user.
+                            MenuController.deleteBook();
+
+                        } else if (user_choice == 6) {
+                            // Show all users:
+                            ConsoleView.displayUsers("allUsers");
+
+                        } else if (user_choice == 7) {
+                            // Show only Members
+                            ConsoleView.displayUsers("member");
+
+                        } else if (user_choice == 8) {
+                            // Show only Librarian
+                            ConsoleView.displayUsers("librarian");
+
+                        } else if (user_choice == 100) {
+                            // Logout the User
+                            user_data = null;
+                            System.out.println("Logging out...");
+
+                        } else {
+                            System.out.println("ERROR: INVALID USER CHOICE\nPlease try again\n");
                         }
-                        System.out.println("\n" + "-".repeat(50));
-
-                    } else if(user_choice == 4){
-                        // This block will be to update all the books.
-
-                        System.out.println("\n" + "-".repeat(50));
-                        Book book_data = book_dto.getBookDetails();
-                        try {
-                            book_dao.librarianUpdateBook(book_data);
-                        } catch (Exception e) {
-                            System.out.println("Error: " + e.getMessage());
-                        }
-                        System.out.println("\n" + "-".repeat(50));
-
-                    } else if (user_choice == 5){
-                        // This will be meant to delete the user.
-
-                        System.out.println("\n" + "-".repeat(50));
-
-                        // Get the ISBN from the user.
-                        int isbn = book_dto.getBookIsbn();
-                        try {
-                            book_dao.librarianRemoveBook(isbn);
-                        } catch (Exception e) {
-                            System.out.println("Error: " + e.getMessage());
-                        }
-                        System.out.println("\n" + "-".repeat(50));
-
-                    } else {
-                        System.out.println("ERROR: INVALID USER CHOICE\nPlease try again\n");
                     }
-
                 } else {
-                    System.out.println("Enter 102\t-> To list all actions that a Member can perform");
-                    // These will be accessible only to user.
+                    while (user_data != null) {
+                        System.out.println("Enter 102\t-> To list all actions that a Member can perform");
+                        // These will be accessible only to user.
+                        System.out.println("Enter 1\t-> To Show ALl books");
 
+                        System.out.print("\nPlease enter your choice: ");
+                        int user_choice = sc.nextInt();
+                        sc.nextLine();
+
+                        if (user_choice == 1) {
+                            ConsoleView.displayBooks("allbooks");
+                        }
+
+
+                    }
                 }
             }
 
