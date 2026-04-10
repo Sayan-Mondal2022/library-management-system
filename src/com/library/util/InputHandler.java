@@ -10,7 +10,7 @@ public class InputHandler {
     public static LoginRequest getLoginDetails(){
         String email, password;
 
-        System.out.println("Enter your Login Credentials\n");
+        System.out.println("\nEnter your Login Credentials\n");
 
         System.out.println("Enter the Email Id: ");
         email = sc.nextLine().trim();
@@ -91,8 +91,8 @@ public class InputHandler {
         if (!(user_type_choice >= 1 && user_type_choice <= 2))
             throw new RuntimeException("Invalid choice");
 
-        if (user_type_choice == 1) user_type = "Librarian";
-        else user_type = "Member";
+        if (user_type_choice == 1) user_type = "librarian";
+        else user_type = "member";
 
         // Displaying the USER Details at last:
         System.out.println("The Entered user details are:");

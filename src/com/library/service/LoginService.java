@@ -22,13 +22,15 @@ public class LoginService {
             }
 
             boolean val = PasswordUtil.verifyPassword(password, user_data.getPasswordHash());
-            System.out.println("Verification result: " + val);
+
+            // This is used for Debugging only.
+            // System.out.println("Verification result: " + val);
 
             if (!val) {
                 throw new RuntimeException("Invalid user credentials, Please Try Again");
             }
 
-            System.out.println("Welcome " + user_data.getUserName() + "!");
+            System.out.println("\nWelcome " + user_data.getUserName() + "!");
 
         } catch (Exception e) {
             throw new RuntimeException(e);

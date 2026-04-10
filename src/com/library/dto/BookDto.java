@@ -6,11 +6,20 @@ import java.util.Scanner;
 public class BookDto {
     public static Scanner sc = new Scanner(System.in);
 
+    public int getBookIsbn(){
+        int isbn;
+        System.out.print("\nEnter the Book ISBN: ");
+        isbn = sc.nextInt();
+
+        System.out.println("\nBook Metadata has been accepted");
+        return isbn;
+    }
+
     public Book getBookDetails() throws RuntimeException {
         int isbn;
         String title, author, genre;
 
-        System.out.println("\nEnter the Book Metadata:\n");
+        System.out.println("\nEnter the Book Metadata:");
 
         System.out.print("Enter the Book ISBN: ");
         isbn = sc.nextInt();
@@ -22,8 +31,10 @@ public class BookDto {
         System.out.print("Enter the Author name: ");
         author = sc.nextLine().trim();
 
-        System.out.println("Enter the Genre of the Book: ");
+        System.out.print("Enter the Genre of the Book: ");
         genre = sc.nextLine().trim();
+
+        System.out.println("\nBook Metadata has been accepted");
 
         if (isbn <= 0) {
             throw new RuntimeException("ISBN can't be less than or equal to zero");
