@@ -6,6 +6,8 @@ import com.library.models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserDao {
@@ -75,6 +77,41 @@ public class UserDao {
 
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<User> getUsers(String user_type) throws Exception{
+        String sqlQuery;
+
+        if (user_type.equalsIgnoreCase("allusers"))
+            sqlQuery = "SELECT * FROM Users";
+        else
+            sqlQuery = "SELECT * FROM Users WHERE user_type=?";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlQuery)) {
+            List<User> userList = new ArrayList<>();
+
+            if (user_type.equalsIgnoreCase("member") || user_type.equalsIgnoreCase("librarian"))
+                ps.setString(1, user_type);
+
+            ResultSet res = ps.executeQuery();
+
+            // user_name, address, phone_no, email, password_hash, user_type
+            while (res.next()){
+                userList.add(new User(
+                        res.getInt("user_id"),
+                        res.getString("user_name"),
+                        res.getString("address"),
+                        res.getString("phone_no"),
+                        res.getString("email"),
+                        res.getString("password_hash"),
+                        res.getString("user_type")
+                ));
+            }
+
+            return userList;
+        } catch (Exception e){
+            throw new RuntimeException(e.getMessage());
         }
     }
 }

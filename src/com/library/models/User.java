@@ -53,4 +53,9 @@ public class User {
     public String getUserType() {
         return this.user_type;
     }
+
+    @Override
+    public String toString() {
+        return "\nUser id: " + this.user_id + "\nUser Name: " + this.user_name + "\nAddress: " + this.address + "\nPhone number: " + this.phone_no + "\nEmail: " + this.email + "\nUser Type: " + this.user_type;
+    }
 }
