@@ -27,4 +27,9 @@ public class Book {
     public String getGenre(){
         return this.genre;
     }
+
+    @Override
+    public String toString() {
+        return "\nBook ISBN: " + this.isbn + "\nTitle: " + this.title + "\nAuthor: " + this.author + "\nGenre: " + this.genre;
+    }
 }

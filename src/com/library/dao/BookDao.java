@@ -4,7 +4,10 @@ import com.library.db.DBConnection;
 import com.library.models.Book;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class BookDao {
@@ -78,25 +81,35 @@ public class BookDao {
         }
     }
 
-    public void librarianShowALLBooks() throws Exception{
-        String sql = "SELECT * FROM Books WHERE is_deleted=FALSE;";
+    public List<Book> showALLBooks(String query) throws Exception{
+        String sql = "SELECT * FROM Books WHERE is_deleted = ?";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)){
 
-            int rowsAffected = ps.executeUpdate();
+            // FALSE to show all the Books
+            boolean val = false;
 
-            if (rowsAffected > 0) {
-                System.out.println("Book marked as deleted.");
-            } else {
-                System.out.println("Book not found.");
+            if (query.equalsIgnoreCase("deleted")) {
+                val = true;
             }
 
+            ps.setBoolean(1, val);
+
+
+            List<Book> bookList = new ArrayList<>();
+            ResultSet res = ps.executeQuery();
+
+            while (res.next()){
+                bookList.add(new Book(
+                        res.getInt("isbn"),
+                        res.getString("title"),
+                        res.getString("author"),
+                        res.getString("genre")
+                ));
+            }
+            return bookList;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void librarianShowDeletedBooks() throws Exception{
-
     }
 }
