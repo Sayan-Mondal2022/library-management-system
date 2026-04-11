@@ -129,10 +129,18 @@ public class Main {
                         System.out.println("Enter 05\t-> Delete a Book");
 
                         // The Options will be changed at last.
+
+                        // This will show NON-DELETED Books
                         System.out.println("Enter 09\t-> To search a book by ISBN");
                         System.out.println("Enter 10\t-> To search a book by Author");
                         System.out.println("Enter 11\t-> To search a book by Title");
                         System.out.println("Enter 12\t-> To search a book by Genre");
+
+                        // This will show DELETED Books
+                        System.out.println("Enter 13\t-> To search a deleted book by ISBN");
+                        System.out.println("Enter 14\t-> To search a deleted book by Author");
+                        System.out.println("Enter 15\t-> To search a deleted book by Title");
+                        System.out.println("Enter 16\t-> To search a deleted book by Genre");
 
                         System.out.println("Enter 06\t-> To show all Users");
                         System.out.println("Enter 07\t-> To show all Members");
@@ -178,41 +186,41 @@ public class Main {
                             // Show only Librarian
                             ConsoleView.displayUsers("librarian");
 
-                        } else if (user_choice == 9) {
+                        } else if (user_choice == 9 || user_choice == 13) {
                             // ISBN
                             try {
                                 String query = MenuController.getSearchQuery("isbn");
-                                ConsoleView.displaySearchedBooks("isbn", query);
+                                ConsoleView.displaySearchedBooks("isbn", query, user_choice == 13);
 
                             } catch (RuntimeException e) {
                                 System.err.println("ERROR: " + e.getMessage());
                             }
 
-                        } else if (user_choice == 10) {
+                        } else if (user_choice == 10 || user_choice == 14) {
                             // author
                             try {
                                 String query = MenuController.getSearchQuery("author");
-                                ConsoleView.displaySearchedBooks("author", query);
+                                ConsoleView.displaySearchedBooks("author", query, user_choice == 14);
 
                             } catch (RuntimeException e) {
                                 System.err.println("ERROR: " + e.getMessage());
                             }
 
-                        } else if (user_choice == 11) {
+                        } else if (user_choice == 11 || user_choice == 15) {
                             // Title
                             try {
                                 String query = MenuController.getSearchQuery("title");
-                                ConsoleView.displaySearchedBooks("title", query);
+                                ConsoleView.displaySearchedBooks("title", query, user_choice == 15);
 
                             } catch (RuntimeException e) {
                                 System.err.println("ERROR: " + e.getMessage());
                             }
 
-                        } else if (user_choice == 12) {
+                        } else if (user_choice == 12 || user_choice == 16) {
                             // Genre
                             try {
                                 String query = MenuController.getSearchQuery("genre");
-                                ConsoleView.displaySearchedBooks("genre", query);
+                                ConsoleView.displaySearchedBooks("genre", query, user_choice == 16);
 
                             } catch (RuntimeException e) {
                                 System.err.println("ERROR: " + e.getMessage());

@@ -12,23 +12,25 @@ import java.util.List;
 
 
 public class BookDao {
-    public List<Book> getBooksByQuery(String query_type, String query) throws Exception {
+    public List<Book> getBooksByQuery(String query_type, String query, boolean is_deleted) throws Exception {
         String sql;
 
         if (query_type.equalsIgnoreCase("isbn"))
-            sql = "SELECT * FROM Books WHERE isbn = ? AND is_deleted = False";
+            sql = "SELECT * FROM Books WHERE isbn = ? AND is_deleted = ?";
         else if (query_type.equalsIgnoreCase("author"))
-            sql = " SELECT * FROM Books WHERE LOWER(author) = ? AND is_deleted = False";
+            sql = " SELECT * FROM Books WHERE LOWER(author) = ? AND is_deleted = ?";
         else if (query_type.equalsIgnoreCase("genre"))
-            sql = " SELECT * FROM Books WHERE LOWER(genre) = ? AND is_deleted = False";
+            sql = " SELECT * FROM Books WHERE LOWER(genre) = ? AND is_deleted = ?";
         else
-            sql = "SELECT * FROM Books WHERE LOWER(title) = ? AND is_deleted = False";
+            sql = "SELECT * FROM Books WHERE LOWER(title) = ? AND is_deleted = ?";
 
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, query);
+            ps.setBoolean(2, is_deleted);
+
 
             List<Book> bookList = new ArrayList<>();
             ResultSet res = ps.executeQuery();

@@ -32,9 +32,9 @@ public class ConsoleView {
     }
 
 
-    public static void displaySearchedBooks(String query_type, String query){
+    public static void displaySearchedBooks(String query_type, String query, boolean is_deleted){
         try{
-            List<Book> bookList = book_dao.getBooksByQuery(query_type, query);
+            List<Book> bookList = book_dao.getBooksByQuery(query_type, query, is_deleted);
 
             System.out.println("Books are:\n");
             for(Book book : bookList){
