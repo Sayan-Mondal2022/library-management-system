@@ -119,19 +119,12 @@ public class BookDao {
         }
     }
 
-    public List<Book> showALLBooks(String query) throws Exception {
+    public List<Book> showALLBooks(boolean is_deleted) throws Exception {
         String sql = "SELECT * FROM Books WHERE is_deleted = ?";
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
-            // FALSE to show all the Books
-            boolean val = false;
-
-            if (query.equalsIgnoreCase("deleted")) {
-                val = true;
-            }
-
-            ps.setBoolean(1, val);
+            ps.setBoolean(1, is_deleted);
 
 
             List<Book> bookList = new ArrayList<>();

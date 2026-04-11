@@ -11,15 +11,10 @@ public class ConsoleView {
     public static BookDao book_dao = new BookDao();
     public static UserDao user_dao = new UserDao();
 
-    public static void displayBooks(String query){
+    public static void displayBooks(boolean is_deleted){
         System.out.println("\n" + "-".repeat(50));
         try{
-            List<Book> bookList;
-
-            if (query.equalsIgnoreCase("deleted"))
-                bookList = book_dao.showALLBooks("deleted");
-            else
-                bookList = book_dao.showALLBooks("all");
+            List<Book> bookList = book_dao.showALLBooks(is_deleted);
 
             System.out.println("Books are:\n");
             for(Book book : bookList){
