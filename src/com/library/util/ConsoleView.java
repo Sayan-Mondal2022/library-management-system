@@ -32,6 +32,20 @@ public class ConsoleView {
     }
 
 
+    public static void displaySearchedBooks(String query_type, String query){
+        try{
+            List<Book> bookList = book_dao.getBooksByQuery(query_type, query);
+
+            System.out.println("Books are:\n");
+            for(Book book : bookList){
+                System.out.println(book);
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+        System.out.println("\n" + "-".repeat(50));
+    }
+
     public static void displayUsers(String user_type){
         System.out.println("\n" + "-".repeat(50));
         try{

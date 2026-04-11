@@ -2,6 +2,7 @@ package com.library.dao;
 
 import com.library.db.DBConnection;
 import com.library.models.Book;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,42 @@ import java.util.List;
 
 
 public class BookDao {
-    public void librarianAddBook(Book book) throws Exception{
+    public List<Book> getBooksByQuery(String query_type, String query) throws Exception {
+        String sql;
+
+        if (query_type.equalsIgnoreCase("isbn"))
+            sql = "SELECT * FROM Books WHERE isbn = ? AND is_deleted = False";
+        else if (query_type.equalsIgnoreCase("author"))
+            sql = " SELECT * FROM Books WHERE LOWER(author) = ? AND is_deleted = False";
+        else if (query_type.equalsIgnoreCase("genre"))
+            sql = " SELECT * FROM Books WHERE LOWER(genre) = ? AND is_deleted = False";
+        else
+            sql = "SELECT * FROM Books WHERE LOWER(title) = ? AND is_deleted = False";
+
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, query);
+
+            List<Book> bookList = new ArrayList<>();
+            ResultSet res = ps.executeQuery();
+
+            while (res.next()) {
+                bookList.add(new Book(
+                        res.getInt("isbn"),
+                        res.getString("title"),
+                        res.getString("author"),
+                        res.getString("genre")
+                ));
+            }
+            return bookList;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void librarianAddBook(Book book) throws Exception {
         // INSERT QUERY for BOOKS Table.
         String sql = "INSERT INTO books (isbn, title, author, genre) VALUES (?, ?, ?, ?)";
 
@@ -35,12 +71,12 @@ public class BookDao {
         }
     }
 
-    public void librarianUpdateBook(Book book) throws Exception{
+    public void librarianUpdateBook(Book book) throws Exception {
         // Keeping one general UPDATE query for any change done to a particular book
         String sql = "UPDATE Books SET title = ?, author = ?, genre = ? WHERE isbn = ?";
 
         try (Connection con = DBConnection.getConnection();
-        PreparedStatement ps = con.prepareStatement(sql)){
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, book.getTitle());
             ps.setString(2, book.getAuthor());
@@ -61,11 +97,11 @@ public class BookDao {
 
     }
 
-    public void librarianRemoveBook(int isbn) throws Exception{
+    public void librarianRemoveBook(int isbn) throws Exception {
         String sql = "UPDATE Books SET is_deleted = TRUE WHERE isbn = ?";
 
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)){
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, isbn);
             int rowsAffected = ps.executeUpdate();
@@ -81,10 +117,10 @@ public class BookDao {
         }
     }
 
-    public List<Book> showALLBooks(String query) throws Exception{
+    public List<Book> showALLBooks(String query) throws Exception {
         String sql = "SELECT * FROM Books WHERE is_deleted = ?";
         try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)){
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
             // FALSE to show all the Books
             boolean val = false;
@@ -99,7 +135,7 @@ public class BookDao {
             List<Book> bookList = new ArrayList<>();
             ResultSet res = ps.executeQuery();
 
-            while (res.next()){
+            while (res.next()) {
                 bookList.add(new Book(
                         res.getInt("isbn"),
                         res.getString("title"),

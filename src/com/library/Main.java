@@ -121,14 +121,24 @@ public class Main {
                     while (user_data != null) {
                         System.out.println("\nEnter 101\t-> To list all actions that a Librarian can perform");
                         // These will be the Operations that is Accessible only to the Librarian.
-                        System.out.println("Enter 1\t-> To Show ALl books");
-                        System.out.println("Enter 2\t-> To Show Only Deleted books");
-                        System.out.println("Enter 3\t-> Add a New Book");
-                        System.out.println("Enter 4\t-> Update a Book");
-                        System.out.println("Enter 5\t-> Delete a Book");
-                        System.out.println("Enter 6\t-> To show all Users");
-                        System.out.println("Enter 7\t-> To show all Members");
-                        System.out.println("Enter 8\t-> To show all Librarians");
+                        System.out.println("Enter 01\t-> To Show ALl books");
+                        System.out.println("Enter 02\t-> To Show Only Deleted books");
+
+                        System.out.println("Enter 03\t-> Add a New Book");
+                        System.out.println("Enter 04\t-> Update a Book");
+                        System.out.println("Enter 05\t-> Delete a Book");
+
+                        // The Options will be changed at last.
+                        System.out.println("Enter 09\t-> To search a book by ISBN");
+                        System.out.println("Enter 10\t-> To search a book by Author");
+                        System.out.println("Enter 11\t-> To search a book by Title");
+                        System.out.println("Enter 12\t-> To search a book by Genre");
+
+                        System.out.println("Enter 06\t-> To show all Users");
+                        System.out.println("Enter 07\t-> To show all Members");
+                        System.out.println("Enter 08\t-> To show all Librarians");
+                        System.out.println("Enter \t-> Add a BookItem for a Existing book");
+                        System.out.println("Enter \t-> Update a BookItem for a Existing book");
                         System.out.println("Enter 100\t-> To logout");
 
 
@@ -167,6 +177,47 @@ public class Main {
                         } else if (user_choice == 8) {
                             // Show only Librarian
                             ConsoleView.displayUsers("librarian");
+
+                        } else if (user_choice == 9) {
+                            // ISBN
+                            try {
+                                String query = MenuController.getSearchQuery("isbn");
+                                ConsoleView.displaySearchedBooks("isbn", query);
+
+                            } catch (RuntimeException e) {
+                                System.err.println("ERROR: " + e.getMessage());
+                            }
+
+                        } else if (user_choice == 10) {
+                            // author
+                            try {
+                                String query = MenuController.getSearchQuery("author");
+                                ConsoleView.displaySearchedBooks("author", query);
+
+                            } catch (RuntimeException e) {
+                                System.err.println("ERROR: " + e.getMessage());
+                            }
+
+                        } else if (user_choice == 11) {
+                            // Title
+                            try {
+                                String query = MenuController.getSearchQuery("title");
+                                ConsoleView.displaySearchedBooks("title", query);
+
+                            } catch (RuntimeException e) {
+                                System.err.println("ERROR: " + e.getMessage());
+                            }
+
+                        } else if (user_choice == 12) {
+                            // Genre
+                            try {
+                                String query = MenuController.getSearchQuery("genre");
+                                ConsoleView.displaySearchedBooks("genre", query);
+
+                            } catch (RuntimeException e) {
+                                System.err.println("ERROR: " + e.getMessage());
+                            }
+
 
                         } else if (user_choice == 100) {
                             // Logout the User

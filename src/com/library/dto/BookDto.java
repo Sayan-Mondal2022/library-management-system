@@ -26,13 +26,13 @@ public class BookDto {
         sc.nextLine();
 
         System.out.print("Enter the Book Title: ");
-        title = sc.nextLine().trim();
+        title = sc.nextLine().toLowerCase().trim();
 
         System.out.print("Enter the Author name: ");
-        author = sc.nextLine().trim();
+        author = sc.nextLine().toLowerCase().trim();
 
         System.out.print("Enter the Genre of the Book: ");
-        genre = sc.nextLine().trim();
+        genre = sc.nextLine().toLowerCase().trim();
 
         System.out.println("\nBook Metadata has been accepted");
 
