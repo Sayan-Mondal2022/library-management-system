@@ -15,7 +15,7 @@ public class LoginService {
         User user_data;
 
         try {
-            user_data = user.getUser(email);
+            user_data = user.getUser("email", email);
 
             if (user_data == null) {
                 throw new RuntimeException("User not found");

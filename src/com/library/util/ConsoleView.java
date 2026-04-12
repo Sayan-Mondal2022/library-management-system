@@ -48,8 +48,29 @@ public class ConsoleView {
 
             System.out.println("Users are:\n");
             for(User user : userList){
-                System.out.println(user);
+                System.out.println("\n");
+                System.out.println("User Id: " + user.getUser_id());
+                System.out.println("User Name: " + user.getUserName());
+                System.out.println("User email: " + user.getEmail());
+                System.out.println("User account type: " + user.getUserType());
             }
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+        System.out.println("\n" + "-".repeat(50));
+    }
+
+    public static void displayUserDetails(){
+        System.out.println("\n" + "-".repeat(50));
+        try{
+            System.out.print("Enter the User Id: ");
+            String user_id = MenuController.sc.nextLine();
+
+            User user = user_dao.getUser("id", user_id);
+
+            System.out.println("\nUser details are:\n");
+            System.out.println(user);
+
         } catch (Exception e) {
             System.out.println("ERROR: " + e.getMessage());
         }

@@ -198,6 +198,21 @@ public class Main {
                             }
 
 
+                        } else if (user_choice == 17) {
+                            // Show a Detail of a Particular User
+                            ConsoleView.displayUsers("allusers");
+                            ConsoleView.displayUserDetails();
+
+                        } else if (user_choice == 18) {
+                            // Show details of a Member
+                            ConsoleView.displayUsers("member");
+                            ConsoleView.displayUserDetails();
+
+                        } else if (user_choice == 19) {
+                            // Show details of a Librarian
+                            ConsoleView.displayUsers("librarian");
+                            ConsoleView.displayUserDetails();
+
                         } else if (user_choice == 100) {
                             // Logout the User
                             user_data = null;

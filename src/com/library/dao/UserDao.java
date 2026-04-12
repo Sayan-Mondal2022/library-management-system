@@ -51,14 +51,19 @@ public class UserDao {
         }
     }
 
-    public User getUser(String email) {
+
+    public User getUser(String query_type, String query) {
         String sqlQuery = "SELECT * FROM Users WHERE email = ? LIMIT 1";
 
-        String user_name, user_type, address, phone_no, hashed_password;
-        int user_id;
+        if (query_type.equalsIgnoreCase("id"))
+            sqlQuery = "SELECT * FROM Users WHERE user_id = ? LIMIT 1";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlQuery)) {
-            ps.setString(1,email);
+
+            if (query_type.equalsIgnoreCase("id"))
+                ps.setInt(1, Integer.parseInt(query));
+            else
+                ps.setString(1, query);
 
             ResultSet res = ps.executeQuery();
             if (!res.next()) {
@@ -70,7 +75,7 @@ public class UserDao {
                     res.getString("user_name"),
                     res.getString("address"),
                     res.getString("phone_no"),
-                    email,
+                    res.getString("email"),
                     res.getString("password_hash"),
                     res.getString("user_type")
             );
@@ -80,7 +85,8 @@ public class UserDao {
         }
     }
 
-    public List<User> getUsers(String user_type) throws Exception{
+
+    public List<User> getUsers(String user_type) throws Exception {
         String sqlQuery;
 
         if (user_type.equalsIgnoreCase("allusers"))
@@ -97,7 +103,7 @@ public class UserDao {
             ResultSet res = ps.executeQuery();
 
             // user_name, address, phone_no, email, password_hash, user_type
-            while (res.next()){
+            while (res.next()) {
                 userList.add(new User(
                         res.getInt("user_id"),
                         res.getString("user_name"),
@@ -110,7 +116,7 @@ public class UserDao {
             }
 
             return userList;
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
