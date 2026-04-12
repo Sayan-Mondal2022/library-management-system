@@ -68,8 +68,7 @@ public class UserActions {
 
         // ---------------------------------
         // Actions that a Librarian can perform on a Book Item
-        System.out.println("Enter 20\t-> Add a BookItem (Book Metadata Already Exist)");
-        System.out.println("Enter 21\t-> Add a BookItem (Book Metadata Doesn't Exist)");
+        System.out.println("Enter 20\t-> Add a BookItem");
         System.out.println("Enter 22\t-> Update a BookItem");
         System.out.println("Enter 23\t-> Remove a BookItem");
 //

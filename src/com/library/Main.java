@@ -203,22 +203,34 @@ public class Main {
                             ConsoleView.displayUsers("allusers");
                             ConsoleView.displayUserDetails();
 
-                        } else if (user_choice == 18) {
+                        }
+                        else if (user_choice == 18) {
                             // Show details of a Member
                             ConsoleView.displayUsers("member");
                             ConsoleView.displayUserDetails();
 
-                        } else if (user_choice == 19) {
+                        }
+                        else if (user_choice == 19) {
                             // Show details of a Librarian
                             ConsoleView.displayUsers("librarian");
                             ConsoleView.displayUserDetails();
+
+                        }
+
+                        else if (user_choice == 20) {
+                            // This is to Insert a BookItem
+                            MenuController.insertBookItem();
+
+                        } else if (user_choice == 24) {
+
 
                         } else if (user_choice == 100) {
                             // Logout the User
                             user_data = null;
                             System.out.println("Logging out...");
 
-                        } else if (user_choice == 101) {
+                        }
+                        else if (user_choice == 101) {
                             // This will list all the Options That a Librarian can Perform
                             UserActions.librarianOptionsList();
 

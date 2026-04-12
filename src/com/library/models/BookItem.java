@@ -7,13 +7,13 @@ public class BookItem {
     private String status;     // This will be either Available, Loaned, Reserved
     private boolean removed;    // Will be false by default.
 
-    public BookItem(String barcode, int isbn, String shelf_id, String section, String status, boolean removed){
+    public BookItem(String barcode, int isbn, String shelf_id, String section, String status){
         this.barcode = barcode;
         this.isbn = isbn;
         this.shelf_id = shelf_id;
         this.section = section;
         this.status = status;
-        this.removed = removed;
+        this.removed = false;
     }
 
     // Getters
