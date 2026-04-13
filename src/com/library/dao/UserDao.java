@@ -12,7 +12,7 @@ import java.util.List;
 
 public class UserDao {
     // This function is used to save the user data into my DB, Completing the user registration process
-    public void save(User user) {
+    public void save(User user) throws RuntimeException{
         Connection con = null;
         int user_id;
 
@@ -21,31 +21,32 @@ public class UserDao {
             con = DBConnection.getConnection();
 
             // Once I get the User_id I will insert the data.
-            String sql = "INSERT INTO Users (user_name, address, phone_no, email, password_hash, user_type) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Users (username, email, phone_no, address, password_hash, user_type) VALUES (?, ?, ?, ?, ?, ?)";
 
             try (PreparedStatement pstmt = con.prepareStatement(sql)) {
 
                 pstmt.setString(1, user.getUserName());
-                pstmt.setString(2, user.getAddress());
+                pstmt.setString(2, user.getEmail());
                 pstmt.setString(3, user.getPhoneNo());
-                pstmt.setString(4, user.getEmail());
+                pstmt.setString(4, user.getAddress());
                 pstmt.setString(5, user.getPasswordHash());
-                pstmt.setString(6, user.getUserType());
+                pstmt.setString(6, user.getUserType().toUpperCase());
 
                 pstmt.executeUpdate();
 
                 System.out.println("User Data has been added to the Database!");
+                System.out.println("User Registration Successful!!");
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         } catch (Exception e) {
-            System.err.println("ERROR: Failed to build the DB connection" + e.getMessage());
+            throw new RuntimeException(e);
         } finally {
             if (con != null) {
                 try {
                     con.close();
                 } catch (Exception e) {
-                    System.err.println("ERROR: Failed to close the DB connection.");
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -72,7 +73,7 @@ public class UserDao {
 
             return new User(
                     res.getInt("user_id"),
-                    res.getString("user_name"),
+                    res.getString("username"),
                     res.getString("address"),
                     res.getString("phone_no"),
                     res.getString("email"),
@@ -98,15 +99,15 @@ public class UserDao {
             List<User> userList = new ArrayList<>();
 
             if (user_type.equalsIgnoreCase("member") || user_type.equalsIgnoreCase("librarian"))
-                ps.setString(1, user_type);
+                ps.setString(1, user_type.toUpperCase());
 
             ResultSet res = ps.executeQuery();
 
-            // user_name, address, phone_no, email, password_hash, user_type
+            // username, address, phone_no, email, password_hash, user_type
             while (res.next()) {
                 userList.add(new User(
                         res.getInt("user_id"),
-                        res.getString("user_name"),
+                        res.getString("username"),
                         res.getString("address"),
                         res.getString("phone_no"),
                         res.getString("email"),

@@ -29,6 +29,11 @@ public class RegistrationService {
                 user_type
         );
 
-        userDao.save(user);
+        try {
+
+            userDao.save(user);
+        } catch (RuntimeException e){
+            throw new RuntimeException(e);
+        }
     }
 }
