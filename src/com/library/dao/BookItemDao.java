@@ -1,101 +1,121 @@
 package com.library.dao;
 
 import com.library.db.DBConnection;
+import com.library.dto.BookItemDto;
 import com.library.models.BookItem;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BookItemDao {
-    // Accessible to all
-    public List<BookItem> ShowBooks(String query_type, String query) throws Exception{
-        String sql = "SELECT * FROM BookItems";
+    public void addBookItem(BookItem book) throws RuntimeException {
+        String sql = "INSERT INTO BookItems (barcode, isbn, shelf_id, book_status, book_condition) VALUES (?, ?, ?, ?, ?)";
 
-        if (query_type.equalsIgnoreCase("isbn"))
-            sql = "SELECT * FROM BookItems WHERE isbn = ?";
-        else if (query_type.equalsIgnoreCase("shelf_id"))
-            sql = "SELECT * FROM BookItems WHERE LOWER(shelf_id) = ?";
-        else if (query_type.equalsIgnoreCase("section"))
-            sql = "SELECT * FROM BookItems WHERE LOWER(section) = ?";
-        else if (query_type.equalsIgnoreCase("status"))
-            sql = "SELECT * FROM BookItems WHERE status = ?";
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, book.getBarcode());
+            ps.setString(2, book.getIsbn());
+            ps.setString(3, book.getShelf_id());
+            ps.setString(4, book.getBook_status().name());
+            ps.setString(5, book.getBook_condition().name());
+
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected < 0)
+                throw new RuntimeException("Error occured while inserting the data!");
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)){
+    // This function will fetch all the Copies available
+    public List<BookItemDto> getAllBookCopies(boolean is_removed) throws RuntimeException {
+        String sql = "SELECT t1.barcode, t1.isbn, t1.shelf_id, t3.name AS \"section_name\", t1.book_status, t1.book_condition\n" +
+                "FROM bookitems AS t1 INNER JOIN shelves AS t2 ON t1.shelf_id = t2.id INNER JOIN section AS t3 ON t2.section_id = t3.id where is_removed = ?";
 
-            if (query_type.equalsIgnoreCase("isbn"))
-                ps.setInt(1, Integer.parseInt(query));
-            else if (!query_type.isEmpty())
-                ps.setString(1, query);
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBoolean(1, is_removed);
 
             ResultSet res = ps.executeQuery();
 
-            List<BookItem> bookItems = new ArrayList<>();
+            List<BookItemDto> bookList = new ArrayList<>();
 
-            while (res.next()){
-                bookItems.add(new BookItem(
-                        res.getString("barcode"),
-                        res.getInt("isbn"),
-                        res.getString("shelf_id"),
-                        res.getString("section"),
-                        res.getString("status")
-                ));
+            while (res.next()) {
+                BookItemDto dto = new BookItemDto();
+
+                dto.setBarcode(res.getString("barcode"));
+                dto.setIsbn(res.getString("isbn"));
+                dto.setShelf_id(res.getString("shelf_id"));
+                dto.setSection_name(res.getString("section_name"));
+                dto.setStatus(res.getString("book_status"));
+                dto.setCondition(res.getString("book_condition"));
+
+                bookList.add(dto);
             }
 
-            return bookItems;
-        } catch (RuntimeException e) {
+            return bookList;
+
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void ShowBooks(int isbn) {
-        String sql = "SELECT * FROM BookItems WHERE isbn = ?";
-    }
 
-    public void ShowBooks(String status) {
-        String sql = "SELECT * FROM BookItems WHERE status = ?";
-    }
+    public BookItemDto getBookItemByBarcode(String barcode) throws RuntimeException {
+        String sql = "SELECT t1.barcode, t1.isbn, t1.shelf_id, t3.name AS \"section_name\", t1.book_status, t1.book_condition\n" +
+                "FROM bookitems AS t1 INNER JOIN shelves AS t2 ON t1.shelf_id = t2.id INNER JOIN section AS t3 ON t2.section_id = t3.id where t1.barcode = ? AND is_removed = ?";
 
-    public void ShowBooks(int isbn, String status) {
-        String sql = "SELECT * FROM BookItems WHERE isbn = ? AND status = ?";
-    }
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, barcode);
+            ps.setBoolean(2, false);
+            ResultSet res = ps.executeQuery();
 
-    public void showBooksInShelf(int shelf_id) {
-        String sql = "SELECT * FROM BookItems WHERE shelf_id = ?";
-    }
+            if (!res.next())
+                throw new RuntimeException("Book Item Not found!");
 
-    // Only accessible to librarian
-    public void librarianAddBook(BookItem book_item) throws Exception{
-        String sql = "INSERT INTO BookItem (barcode, isbn, shelf_id, section, book_status) VALUES (?, ?, ?, ?, ?);";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)){
+            BookItemDto dto = new BookItemDto();
 
-            // Inserting all the values:
-            ps.setString(1, book_item.getBarcode());
-            ps.setInt(2, book_item.getIsbn());
-            ps.setString(3, book_item.getShelf_id());
-            ps.setString(4, book_item.getSection());
-            ps.setString(5, book_item.getStatus());
+            dto.setBarcode(res.getString("barcode"));
+            dto.setIsbn(res.getString("isbn"));
+            dto.setShelf_id(res.getString("shelf_id"));
+            dto.setSection_name(res.getString("section_name"));
+            dto.setStatus(res.getString("book_status"));
+            dto.setCondition(res.getString("book_condition"));
 
-            ps.executeUpdate();
+            return dto;
 
-            System.out.println("\nBook Item has been added to Database!");
-
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void librarianMoveBook(){
-        // This function will move a particular set of books from one shelf to another.
-        // From one Section to Another.
-    }
+    public void updateBookItem(BookItem book){
+        String sql = "UPDATE BookItems SET shelf_id = ?, book_status = ?, book_condition = ? WHERE barcode = ? AND isbn = ?";
 
-    public void librarianRemoveBook(){
-        // This function will remove only a book with a Barcode.
-        // If removed change the bookItem status to removed=True.
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setString(1, book.getShelf_id());
+            ps.setString(2, book.getBook_status().name());
+            ps.setString(3, book.getBook_condition().name());
+
+            // WHERE clause (identifier)
+            ps.setString(4, book.getBarcode());
+            ps.setString(5, book.getIsbn());
+
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected == 0)
+                throw new RuntimeException("No BookItem found to update!");
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
