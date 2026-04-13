@@ -1,37 +1,88 @@
 package com.library.dto;
 
 import com.library.models.BookItem;
-import com.library.util.MenuController;
-import java.util.Scanner;
+import com.library.enums.BookCondition;
+import com.library.enums.BookStatus;
 
 public class BookItemDto {
-    public static  Scanner sc = new Scanner(System.in);
+    private String barcode, isbn, shelf_id, section_name, status, condition;
+    private boolean removed;
+    private BookStatus book_status;
+    private BookCondition book_condition;
 
-    public BookItem getBookItemDetails(int isbn) throws RuntimeException{
-        System.out.println("\nEnter the BookItem details: ");
-        String barcode, shelf_id, section;
-        String status = "available";    // It is set to available while it is added for the first time.
 
-        System.out.print("Enter the barcode: ");
-        barcode = sc.nextLine();
+    public String getBarcode() {
+        return this.barcode;
+    }
 
-        System.out.print("Enter the Shelf id: ");
-        shelf_id = sc.nextLine();
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
 
-        System.out.print("Enter the Book Section: ");
-        section = sc.nextLine();
 
-        if (barcode.isEmpty() || shelf_id.isEmpty() || section.isEmpty())
-            throw new RuntimeException("Values can't be empty");
-        if (barcode.length() < 10)
-            throw new RuntimeException("Barcode can't be less than 10");
+    public String getIsbn() {
+        return this.isbn;
+    }
 
-        return new BookItem(
-                barcode,
-                isbn,
-                shelf_id,
-                section,
-                status
-        );
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+
+    public String getSection_name() {
+        return this.section_name;
+    }
+
+    public void setSection_name(String section_name) {
+        this.section_name = section_name;
+    }
+
+    public BookStatus getBook_status() {
+        return this.book_status;
+    }
+
+    public BookCondition getBook_condition() {
+        return this.book_condition;
+    }
+
+    public void setBook_condition(BookCondition book_condition) {
+        this.book_condition = book_condition;
+    }
+
+    public void setBook_status(BookStatus book_status) {
+        this.book_status = book_status;
+    }
+
+
+    public boolean getRemoved() {
+        return this.removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
+
+    public String getShelf_id() {
+        return this.shelf_id;
+    }
+
+    public void setShelf_id(String shelf_id) {
+        this.shelf_id = shelf_id;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public String getCondition() {
+        return this.condition;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return this.status;
     }
 }

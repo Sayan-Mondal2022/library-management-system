@@ -1,43 +1,69 @@
 package com.library.models;
 
+import com.library.enums.BookCondition;
+import com.library.enums.BookStatus;
+
 public class BookItem {
-    private String barcode;
-    private int isbn;
+    private String barcode, isbn;
     private String shelf_id, section;
-    private String status;     // This will be either Available, Loaned, Reserved
-    private boolean removed;    // Will be false by default.
-
-    public BookItem(String barcode, int isbn, String shelf_id, String section, String status){
-        this.barcode = barcode;
-        this.isbn = isbn;
-        this.shelf_id = shelf_id;
-        this.section = section;
-        this.status = status;
-        this.removed = false;
-    }
-
-    // Getters
-    public int getIsbn() {
-        return this.isbn;
-    }
+    private boolean is_removed;
+    private BookStatus book_status;
+    private BookCondition book_condition;
 
     public String getBarcode() {
-        return this.barcode;
+        return barcode;
+    }
+
+    public String getIsbn() {
+        return isbn;
+    }
+
+    public BookStatus getBook_status() {
+        return book_status;
+    }
+
+    public BookCondition getBook_condition() {
+        return book_condition;
     }
 
     public String getShelf_id() {
-        return this.shelf_id;
+        return shelf_id;
     }
 
     public String getSection() {
-        return this.section;
+        return section;
     }
 
-    public String getStatus() {
-        return this.status;
+    public boolean isIs_removed() {
+        return is_removed;
     }
 
-    public boolean isRemoved() {
-        return this.removed;
+    // Setters
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setBook_condition(BookCondition book_condition) {
+        this.book_condition = book_condition;
+    }
+
+    public void setBook_status(BookStatus book_status) {
+        this.book_status = book_status;
+    }
+
+    public void setShelf_id(String shelf_id) {
+        this.shelf_id = shelf_id;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
+    }
+
+    public void setIs_removed(boolean is_removed) {
+        this.is_removed = is_removed;
     }
 }
