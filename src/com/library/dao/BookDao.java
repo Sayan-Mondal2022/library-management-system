@@ -1,6 +1,7 @@
 package com.library.dao;
 
 import com.library.db.DBConnection;
+import com.library.dto.BookResponseDto;
 import com.library.models.Book;
 import com.library.models.Genre;
 
@@ -82,22 +83,23 @@ public class BookDao {
         }
     }
 
+
+    // Need to work on this class
     public List<Book> getBooksByQuery(String query_type, String query, boolean is_deleted) throws Exception {
         String sql;
 
         if (query_type.equalsIgnoreCase("isbn"))
             sql = "SELECT * FROM Books WHERE isbn = ? AND is_deleted = ?";
-        else if (query_type.equalsIgnoreCase("author"))
-            sql = " SELECT * FROM Books WHERE LOWER(author) = ? AND is_deleted = ?";
-        else if (query_type.equalsIgnoreCase("genre"))
-            sql = " SELECT * FROM Books WHERE LOWER(genre) = ? AND is_deleted = ?";
+        else if (query_type.equalsIgnoreCase("title"))
+            sql = " SELECT * FROM Books WHERE LOWER(title) = ? AND is_deleted = ?";
         else
-            sql = "SELECT * FROM Books WHERE LOWER(title) = ? AND is_deleted = ?";
+            sql = "SELECT * FROM Books WHERE is_deleted = ?";
 
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
+//            if (query_type.equalsIgnoreCase())
             ps.setString(1, query);
             ps.setBoolean(2, is_deleted);
 
@@ -237,6 +239,33 @@ public class BookDao {
                 throw new RuntimeException("Book not found.");
             }
 
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public List<BookResponseDto> showBookIsbnTitle(boolean is_deleted) throws RuntimeException{
+        String sql = "SELECT isbn, title FROM Books WHERE is_deleted = ?;";
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setBoolean(1, is_deleted);
+
+
+            List<BookResponseDto> list = new ArrayList<>();
+            ResultSet res = ps.executeQuery();
+
+            while (res.next()) {
+                BookResponseDto book = new BookResponseDto();
+
+                book.setIsbn(res.getString("isbn"));
+                book.setTitle(res.getString("title"));
+
+                list.add(book);
+            }
+            return list;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
