@@ -1,0 +1,58 @@
+package com.library.models;
+
+import java.time.LocalDateTime;
+
+public class BorrowBook {
+    private int borrowId, userId;
+    private String barcode;
+    private LocalDateTime issueDate, dueDate, returnDate;
+
+
+    public String getBarcode() {
+        return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
+    }
+
+    public int getBorrowId() {
+        return borrowId;
+    }
+
+    public void setBorrowId(int borrowId) {
+        this.borrowId = borrowId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public LocalDateTime getIssueDate() {
+        return issueDate;
+    }
+
+    public void setIssueDate(LocalDateTime issueDate) {
+        this.issueDate = issueDate;
+    }
+
+    public LocalDateTime getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDateTime dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public LocalDateTime getReturnDate() {
+        return returnDate;
+    }
+
+    public void setReturnDate(LocalDateTime returnDate) {
+        this.returnDate = returnDate;
+    }
+}
