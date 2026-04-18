@@ -1,6 +1,6 @@
 package com.library.dto;
 
-public class BorrowBookApplicantsDto {
+public class ApplicantsDto {
     private int userId;
     private String barcode;
     private String status;
