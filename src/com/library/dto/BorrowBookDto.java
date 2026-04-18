@@ -5,8 +5,16 @@ import java.time.LocalDateTime;
 public class BorrowBookDto {
     private int borrowId, userId;
     private String barcode;
+    private int dueDays;
     private LocalDateTime issueDate, dueDate, returnDate;
 
+    public int getDueDays() {
+        return dueDays;
+    }
+
+    public void setDueDays(int dueDays) {
+        this.dueDays = dueDays;
+    }
 
     public String getBarcode() {
         return barcode;
