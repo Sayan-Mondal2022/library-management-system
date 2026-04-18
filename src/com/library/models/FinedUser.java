@@ -1,38 +1,47 @@
 package com.library.models;
 
-// This table, will store users who are fined. Such that it becomes easy to maintain.
 public class FinedUser {
-    private int loan_id, user_id;
-    private double fine;
-    private String loan_status;    // Will be 'Open' if the is not returned even after the due_date, will be 'close' if returned after dur_date.
-    private String due_status;     // Can be 'Cleared' or 'unCleared'
+    private int fineId, borrowId;
+    private double fineAmount, paidAmount;
+    private String isPaid;
 
-    public FinedUser(int loan_id, int user_id, double fine, String loan_status, String due_status){
-        this.loan_id = loan_id;
-        this.user_id = user_id;
-        this.fine = fine;
-        this.loan_status = loan_status;
-        this.due_status = due_status;
+    public int getFineId() {
+        return fineId;
     }
 
-    // Getters:
-    public int getLoan_id() {
-        return this.loan_id;
+    public void setFineId(int fineId) {
+        this.fineId = fineId;
     }
 
-    public int getUser_id() {
-        return this.user_id;
+    public int getBorrowId() {
+        return borrowId;
     }
 
-    public double getFine() {
-        return this.fine;
+    public void setBorrowId(int borrowId) {
+        this.borrowId = borrowId;
     }
 
-    public String getLoan_status() {
-        return this.loan_status;
+    public double getFineAmount() {
+        return fineAmount;
     }
 
-    public String getDue_status() {
-        return this.due_status;
+    public void setFineAmount(double fineAmount) {
+        this.fineAmount = fineAmount;
+    }
+
+    public double getPaidAmount() {
+        return paidAmount;
+    }
+
+    public void setPaidAmount(double paidAmount) {
+        this.paidAmount = paidAmount;
+    }
+
+    public String getIsPaid() {
+        return isPaid;
+    }
+
+    public void setIsPaid(String isPaid) {
+        this.isPaid = isPaid;
     }
 }
