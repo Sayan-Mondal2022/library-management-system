@@ -2,12 +2,11 @@ package com.library.service;
 
 import com.library.dao.BookItemDao;
 import com.library.dao.BorrowBookDao;
-import com.library.dto.BorrowBookApplicantsDto;
+import com.library.dto.ApplicantsDto;
 import com.library.dto.BorrowBookDto;
 import com.library.dto.BorrowResponseDto;
 import com.library.dto.FinedDetailsDto;
 import com.library.enums.ApplicantStatus;
-import com.library.enums.BookStatus;
 import com.library.models.BorrowBook;
 
 import java.util.ArrayList;
@@ -42,7 +41,7 @@ public class BorrowBookService {
     }
 
 
-    public ArrayList<BorrowBookApplicantsDto> getPendingApplicants() throws RuntimeException {
+    public ArrayList<ApplicantsDto> getPendingApplicants() throws RuntimeException {
         return dao.getPendingApplicants();
     }
 

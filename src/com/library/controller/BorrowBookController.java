@@ -1,64 +1,30 @@
 package com.library.controller;
 
 import com.library.dao.BorrowBookDao;
-import com.library.dto.BorrowBookApplicantsDto;
+import com.library.dto.ApplicantsDto;
 import com.library.dto.BorrowBookDto;
 import com.library.dto.BorrowResponseDto;
 import com.library.dto.FinedDetailsDto;
 import com.library.service.BorrowBookService;
+import com.library.util.Validators;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class BorrowBookController {
-    private Scanner sc = new Scanner(System.in);
+    private final Scanner sc = new Scanner(System.in);
     BorrowBookService service = new BorrowBookService(new BorrowBookDao());
 
 
-    private int readInt(String message) {
-        while (true) {
-            try {
-                System.out.print(message);
-                int value = Integer.parseInt(sc.nextLine());
 
-                if (value <= 0) {
-                    System.out.println("Value must be positive!");
-                    continue;
-                }
-
-                return value;
-
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input! Enter a number.");
-            }
-        }
-    }
-
-
-    private int readDays(String message) {
-        while (true) {
-            int days = readInt(message);
-
-            if (days > 365) {
-                System.out.println("Too many days! Max allowed is 365.");
-                continue;
-            }
-
-            return days;
-        }
-    }
-
-
-
-
-    public void displayApplicants(ArrayList<BorrowBookApplicantsDto> applicantList) throws RuntimeException{
+    public void displayApplicants(ArrayList<ApplicantsDto> applicantList) throws RuntimeException{
         if (applicantList == null || applicantList.isEmpty()) {
             throw new RuntimeException("THERE's NO APPLICANTS RIGHT NOW");
         }
 
         System.out.println("The Applicants are: ");
-        for (BorrowBookApplicantsDto applicant : applicantList) {
+        for (ApplicantsDto applicant : applicantList) {
             System.out.println("Applicant ID: " + applicant.getUserId());
             System.out.println("Book Barcode: " + applicant.getBarcode());
         }
@@ -150,9 +116,7 @@ public class BorrowBookController {
             }
             System.out.println("\n");
 
-            int id = readInt("Enter USER ID: ");
-
-            return id;
+            return Validators.readInt("Enter USER ID: ");
 
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
@@ -211,10 +175,10 @@ public class BorrowBookController {
 
         System.out.println("SELECT the APPLICANT-ID and Book BARCODE from the below list:\n");
         try {
-            ArrayList<BorrowBookApplicantsDto> applicants = service.getPendingApplicants();
+            ArrayList<ApplicantsDto> applicants = service.getPendingApplicants();
             displayApplicants(applicants);
 
-            int id = readInt("Enter USER ID: ");
+            int id = Validators.readInt("Enter USER ID: ");
 
             System.out.print("Enter the Book Barcode: ");
             String barcode = sc.nextLine();
@@ -223,7 +187,7 @@ public class BorrowBookController {
             dto.setUserId(id);
             dto.setBarcode(barcode);
 
-            int days = readDays("Enter borrow duration (days): ");
+            int days = Validators.readDays("Enter borrow duration (days): ");
             dto.setIssueDate(LocalDateTime.now());
             dto.setDueDate(dto.getIssueDate().plusDays(days));
 
@@ -242,11 +206,11 @@ public class BorrowBookController {
         System.out.println("-".repeat(50));
 
         try {
-            ArrayList<BorrowBookApplicantsDto> applicants = service.getPendingApplicants();
+            ArrayList<ApplicantsDto> applicants = service.getPendingApplicants();
             displayApplicants(applicants);
 
 
-            int id = readInt("Enter Applicant ID: ");
+            int id = Validators.readInt("Enter Applicant ID: ");
 
             System.out.print("Enter the Book Barcode: ");
             String barcode = sc.nextLine();
@@ -404,7 +368,7 @@ public class BorrowBookController {
         System.out.println("-".repeat(50));
 
         try {
-            int userId = readInt("Enter USER ID: ");
+            int userId = Validators.readInt("Enter USER ID: ");
 
             ArrayList<BorrowResponseDto> list = service.getBooksIssuedToUser(userId);
 

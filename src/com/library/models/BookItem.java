@@ -5,65 +5,64 @@ import com.library.enums.BookStatus;
 
 public class BookItem {
     private String barcode, isbn;
-    private String shelf_id, section;
-    private boolean is_removed;
-    private BookStatus book_status;
-    private BookCondition book_condition;
+    private String shelfId, section;
+    private boolean isRemoved;
+    private BookStatus bookStatus;
+    private BookCondition bookCondition;
 
     public String getBarcode() {
         return barcode;
+    }
+
+    public void setBarcode(String barcode) {
+        this.barcode = barcode;
     }
 
     public String getIsbn() {
         return isbn;
     }
 
-    public BookStatus getBook_status() {
-        return book_status;
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
     }
 
-    public BookCondition getBook_condition() {
-        return book_condition;
+    public String getShelfId() {
+        return shelfId;
     }
 
-    public String getShelf_id() {
-        return shelf_id;
+    public void setShelfId(String shelfId) {
+        this.shelfId = shelfId;
     }
 
     public String getSection() {
         return section;
     }
 
-    public boolean isIs_removed() {
-        return is_removed;
-    }
-
-    // Setters
-    public void setBarcode(String barcode) {
-        this.barcode = barcode;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public void setBook_condition(BookCondition book_condition) {
-        this.book_condition = book_condition;
-    }
-
-    public void setBook_status(BookStatus book_status) {
-        this.book_status = book_status;
-    }
-
-    public void setShelf_id(String shelf_id) {
-        this.shelf_id = shelf_id;
-    }
-
     public void setSection(String section) {
         this.section = section;
     }
 
-    public void setIs_removed(boolean is_removed) {
-        this.is_removed = is_removed;
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(boolean removed) {
+        isRemoved = removed;
+    }
+
+    public BookStatus getBookStatus() {
+        return bookStatus;
+    }
+
+    public void setBookStatus(BookStatus bookStatus) {
+        this.bookStatus = bookStatus;
+    }
+
+    public BookCondition getBookCondition() {
+        return bookCondition;
+    }
+
+    public void setBookCondition(BookCondition bookCondition) {
+        this.bookCondition = bookCondition;
     }
 }

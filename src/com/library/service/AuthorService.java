@@ -13,7 +13,7 @@ public class AuthorService {
         return dao.getAllAuthors();
     }
 
-    public Author addAuthor(AuthorDto dto) throws RuntimeException {
+    public int addAuthor(AuthorDto dto) throws RuntimeException {
         if (dto.getName() == null || dto.getName().isEmpty()) {
             throw new RuntimeException("Author name cannot be empty");
         }

@@ -1,74 +1,32 @@
 package com.library.dao;
 
 import com.library.db.DBConnection;
-import com.library.dto.BookResponseDto;
+import com.library.dto.BookDto;
 import com.library.models.Book;
-import com.library.models.Genre;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class BookDao {
-    public List<Genre> getAllGenres() throws Exception {
-        String sql = "SELECT * FROM Genres";
-
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ResultSet res = ps.executeQuery();
-
-            List<Genre> genres = new ArrayList<>();
-
-            while (res.next()) {
-                Genre genre = new Genre();
-
-                genre.setGenre_id(res.getInt("id"));
-                genre.setGenre_name(res.getString("name"));
-
-                genres.add(genre);
-            }
-
-            return genres;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public Book getBookByIsbn(String isbn) {
-        String sql = "SELECT t1.*, \n" +
-                "       t2.name AS author_name,\n" +
-                "       t3.name AS genre_name\n" +
-                "FROM Books t1\n" +
-                "JOIN Authors t2 ON t1.author_id = t2.id\n" +
-                "JOIN Genres t3 ON t1.genre_id = t3.id\n" +
-                "WHERE t1.is_deleted = ?";
-
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
-
-            ps.setBoolean(1, false);
-
-
-            List<Book> bookList = new ArrayList<>();
-            ResultSet res = ps.executeQuery();
-            res.next();
-
-            Book newBook = new Book();
+    private BookDto setDetails(ResultSet res) throws RuntimeException {
+        try {
+            BookDto newBook = new BookDto();
 
             newBook.setIsbn(res.getString("isbn"));
             newBook.setTitle(res.getString("title"));
-            newBook.setAuthor_id(res.getInt("author_id"));
-            newBook.setGenre_id(res.getInt("genre_id"));
-            newBook.setAuthor_name(res.getString("author_name"));
-            newBook.setGenre_name(res.getString("genre_name"));
+            newBook.setAuthorId(res.getInt("author_id"));
+            newBook.setGenreId(res.getInt("genre_id"));
+            newBook.setAuthorName(res.getString("author_name"));
+            newBook.setGenreName(res.getString("genre_name"));
             newBook.setPublisher(res.getString("publisher"));
             newBook.setEdition(res.getString("edition"));
 
             int year = res.getInt("publication_year");
-            newBook.setPublication_year(res.wasNull() ? null : year);
+            newBook.setPublicationYear(res.wasNull() ? null : year);
 
             int pages = res.getInt("pages");
             newBook.setPages(res.wasNull() ? null : pages);
@@ -83,59 +41,133 @@ public class BookDao {
         }
     }
 
-
-    // Need to work on this class
-    public List<Book> getBooksByQuery(String query_type, String query, boolean is_deleted) throws Exception {
-        String sql;
-
-        if (query_type.equalsIgnoreCase("isbn"))
-            sql = "SELECT * FROM Books WHERE isbn = ? AND is_deleted = ?";
-        else if (query_type.equalsIgnoreCase("title"))
-            sql = " SELECT * FROM Books WHERE LOWER(title) = ? AND is_deleted = ?";
-        else
-            sql = "SELECT * FROM Books WHERE is_deleted = ?";
-
+    public List<BookDto> getBooksByAuthor(int authorId) throws RuntimeException {
+        String sql = """
+                SELECT
+                	t1.isbn, t1.title,
+                    t1.author_id, t2.name AS author_name,
+                    t1.genre_id, t3.name AS genre_name,
+                    t1.publisher, t1.publication_year,
+                    t1.edition, t1.pages,
+                    t1.language, t1.description
+                FROM Books AS t1 INNER JOIN Authors AS t2 ON t1.author_id = t2.id
+                INNER JOIN Genres AS t3 ON t1.genre_id = t3.id
+                WHERE t1.is_deleted = FALSE AND t1.author_id = ?;
+                """;
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, authorId);
 
-//            if (query_type.equalsIgnoreCase())
-            ps.setString(1, query);
-            ps.setBoolean(2, is_deleted);
-
-
-            List<Book> bookList = new ArrayList<>();
             ResultSet res = ps.executeQuery();
+            List<BookDto> bookList = new ArrayList<>();
 
             while (res.next()) {
-                Book newBook = new Book();
-
-                newBook.setIsbn(res.getString("isbn"));
-                newBook.setTitle(res.getString("title"));
-                newBook.setAuthor_id(res.getInt("author_id"));
-                newBook.setGenre_id(res.getInt("genre_id"));
-                newBook.setPublisher(res.getString("publisher"));
-                newBook.setEdition(res.getString("edition"));
-
-                int year = res.getInt("publication_year");
-                newBook.setPublication_year(res.wasNull() ? null : year);
-
-                int pages = res.getInt("pages");
-                newBook.setPages(res.wasNull() ? null : pages);
-
-                newBook.setDescription(res.getString("description"));
-                newBook.setLanguage(res.getString("language"));
-
+                BookDto newBook = setDetails(res);
                 bookList.add(newBook);
             }
             return bookList;
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    public List<BookDto> getBooksByGenre(int genreId) throws RuntimeException {
+        String sql = """
+                SELECT
+                	t1.isbn, t1.title,
+                    t1.author_id, t2.name AS author_name,
+                    t1.genre_id, t3.name AS genre_name,
+                    t1.publisher, t1.publication_year,
+                    t1.edition, t1.pages,
+                    t1.language, t1.description
+                FROM Books AS t1 INNER JOIN Authors AS t2 ON t1.author_id = t2.id
+                INNER JOIN Genres AS t3 ON t1.genre_id = t3.id
+                WHERE t1.is_deleted = FALSE AND t1.genre_id = ?;
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, genreId);
+
+            ResultSet res = ps.executeQuery();
+            List<BookDto> bookList = new ArrayList<>();
+
+            while (res.next()) {
+                BookDto newBook = setDetails(res);
+                bookList.add(newBook);
+            }
+            return bookList;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+     public List<BookDto> getBooksByTitle(String title) throws RuntimeException {
+        String sql = """
+                SELECT
+                	t1.isbn, t1.title,
+                    t1.author_id, t2.name AS author_name,
+                    t1.genre_id, t3.name AS genre_name,
+                    t1.publisher, t1.publication_year,
+                    t1.edition, t1.pages,
+                    t1.language, t1.description
+                FROM Books AS t1 INNER JOIN Authors AS t2 ON t1.author_id = t2.id
+                INNER JOIN Genres AS t3 ON t1.genre_id = t3.id
+                WHERE t1.is_deleted = FALSE AND t1.title = ?;
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, title);
+
+            ResultSet res = ps.executeQuery();
+            List<BookDto> bookList = new ArrayList<>();
+
+            while (res.next()) {
+                BookDto newBook = setDetails(res);
+                bookList.add(newBook);
+            }
+            return bookList;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    public BookDto getBookByIsbn(String isbn) {
+        String sql = """
+                SELECT
+                	t1.isbn, t1.title,
+                    t1.author_id, t2.name AS author_name,
+                    t1.genre_id, t3.name AS genre_name,
+                    t1.publisher, t1.publication_year,
+                    t1.edition, t1.pages,
+                    t1.language, t1.description
+                FROM Books AS t1 INNER JOIN Authors AS t2 ON t1.author_id = t2.id
+                INNER JOIN Genres AS t3 ON t1.genre_id = t3.id
+                WHERE t1.is_deleted = FALSE AND t1.isbn = ?;
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, isbn);
+
+
+            ResultSet res = ps.executeQuery();
+            res.next();
+            return setDetails(res);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public void librarianAddBook(String insert_type, Book book) throws Exception {
-        // INSERT QUERY for BOOKS Table.
         String sql = "INSERT INTO books (isbn, title, author_id, genre_id) VALUES (?, ?, ?, ?)";
 
         if (insert_type.equalsIgnoreCase("full"))
@@ -146,56 +178,50 @@ public class BookDao {
 
             ps.setString(1, book.getIsbn());
             ps.setString(2, book.getTitle());
-            ps.setInt(3, book.getAuthor_id());
-            ps.setInt(4, book.getGenre_id());
+            ps.setInt(3, book.getAuthorId());
+            ps.setInt(4, book.getGenreId());
 
             if (insert_type.equalsIgnoreCase("full")) {
                 ps.setString(5, book.getPublisher());
-                ps.setInt(6, book.getPublication_year());
+                ps.setInt(6, book.getPublicationYear());
                 ps.setString(7, book.getEdition());
                 ps.setInt(8, book.getPages());
                 ps.setString(9, book.getLanguage());
                 ps.setString(10, book.getDescription());
             }
+            ps.executeUpdate();
 
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Book Details have been added to the Database!!");
-            } else {
-                throw new SQLException("Error while inserting the Values");
-            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void librarianUpdateBook(Book book) throws Exception {
-        // Keeping one general UPDATE query for any change done to a particular book
-        String sql = "UPDATE Books SET " +
-                "title = ?, " +
-                "author_id = ?, " +
-                "genre_id = ?, " +
-                "publisher = ?, " +
-                "publication_year = ?, " +
-                "pages = ?, " +
-                "edition = ?, " +
-                "language = ?, " +
-                "description = ? " +
-                "WHERE isbn = ?";
+    public void librarianUpdateBook(Book book) throws RuntimeException {
+        String sql = """
+                UPDATE Books
+                SET
+                    title = ?,
+                    author_id = ?,
+                    genre_id = ?,
+                    publisher = ?,
+                    publication_year = ?,
+                    pages = ?,
+                    edition = ?,
+                    language = ?,
+                    description = ?
+                WHERE isbn = ?;
+                """;
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, book.getTitle());
-            ps.setInt(2, book.getAuthor_id());
-            ps.setInt(3, book.getGenre_id());
-
+            ps.setInt(2, book.getAuthorId());
+            ps.setInt(3, book.getGenreId());
             ps.setString(4, book.getPublisher());
 
-            // Handle NULL for Integer fields
-            if (book.getPublication_year() != null)
-                ps.setInt(5, book.getPublication_year());
+            if (book.getPublicationYear() != null)
+                ps.setInt(5, book.getPublicationYear());
             else
                 ps.setNull(5, java.sql.Types.INTEGER);
 
@@ -208,15 +234,10 @@ public class BookDao {
             ps.setString(8, book.getLanguage());
             ps.setString(9, book.getDescription());
 
+
             ps.setString(10, book.getIsbn());
 
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Book details has been updated.");
-            } else {
-                throw new RuntimeException("Book not found.");
-            }
+            ps.executeUpdate();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -224,20 +245,14 @@ public class BookDao {
 
     }
 
-    public void librarianRemoveBook(String isbn) throws Exception {
+    public void librarianDeleteBook(String isbn) throws RuntimeException {
         String sql = "UPDATE Books SET is_deleted = TRUE WHERE isbn = ?";
 
         try (Connection con = DBConnection.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, isbn);
-            int rowsAffected = ps.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Book marked as deleted.");
-            } else {
-                throw new RuntimeException("Book not found.");
-            }
+            ps.executeUpdate();
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -245,20 +260,19 @@ public class BookDao {
     }
 
 
-    public List<BookResponseDto> showBookIsbnTitle(boolean is_deleted) throws RuntimeException{
+    public List<BookDto> getBookIsbnTitle(boolean is_deleted) throws RuntimeException {
         String sql = "SELECT isbn, title FROM Books WHERE is_deleted = ?;";
 
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setBoolean(1, is_deleted);
 
 
-            List<BookResponseDto> list = new ArrayList<>();
+            List<BookDto> list = new ArrayList<>();
             ResultSet res = ps.executeQuery();
 
             while (res.next()) {
-                BookResponseDto book = new BookResponseDto();
+                BookDto book = new BookDto();
 
                 book.setIsbn(res.getString("isbn"));
                 book.setTitle(res.getString("title"));
@@ -271,47 +285,33 @@ public class BookDao {
         }
     }
 
-    public List<Book> showALLBooks(boolean is_deleted) throws Exception {
-        String sql = "SELECT t1.*, \n" +
-                "       t2.name AS author_name,\n" +
-                "       t3.name AS genre_name\n" +
-                "FROM Books t1\n" +
-                "JOIN Authors t2 ON t1.author_id = t2.id\n" +
-                "JOIN Genres t3 ON t1.genre_id = t3.id\n" +
-                "WHERE t1.is_deleted = ?";
-        try (Connection con = DBConnection.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+    public List<BookDto> getAllBooks(boolean is_deleted) throws RuntimeException {
+        String sql = """
+                SELECT
+                    t1.*,
+                    t2.name AS author_name,
+                    t3.name AS genre_name
+                FROM Books t1
+                JOIN Authors t2
+                    ON t1.author_id = t2.id
+                JOIN Genres t3
+                    ON t1.genre_id = t3.id
+                WHERE t1.is_deleted = ?;
+                """;
 
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setBoolean(1, is_deleted);
 
 
-            List<Book> bookList = new ArrayList<>();
+            List<BookDto> bookList = new ArrayList<>();
             ResultSet res = ps.executeQuery();
 
             while (res.next()) {
-                Book newBook = new Book();
-
-                newBook.setIsbn(res.getString("isbn"));
-                newBook.setTitle(res.getString("title"));
-                newBook.setAuthor_id(res.getInt("author_id"));
-                newBook.setGenre_id(res.getInt("genre_id"));
-                newBook.setAuthor_name(res.getString("author_name"));
-                newBook.setGenre_name(res.getString("genre_name"));
-                newBook.setPublisher(res.getString("publisher"));
-                newBook.setEdition(res.getString("edition"));
-
-                int year = res.getInt("publication_year");
-                newBook.setPublication_year(res.wasNull() ? null : year);
-
-                int pages = res.getInt("pages");
-                newBook.setPages(res.wasNull() ? null : pages);
-
-                newBook.setDescription(res.getString("description"));
-                newBook.setLanguage(res.getString("language"));
-
+                BookDto newBook = setDetails(res);
                 bookList.add(newBook);
             }
             return bookList;
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

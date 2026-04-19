@@ -1,17 +1,17 @@
 package com.library.models;
 
 public class Author {
-    private int author_id;
-    private String author_name, nationality;
+    private int authorId;
+    private String authorName, nationality;
 
 
     // Getters:
-    public int getAuthor_id() {
-        return this.author_id;
+    public int getAuthorId() {
+        return this.authorId;
     }
 
-    public String getAuthor_name() {
-        return this.author_name;
+    public String getAuthorName() {
+        return this.authorName;
     }
 
     public String getNationality() {
@@ -19,12 +19,12 @@ public class Author {
     }
 
 
-    public void setAuthor_id(int author_id) {
-        this.author_id = author_id;
+    public void setAuthorId(int author_id) {
+        this.authorId = author_id;
     }
 
-    public void setAuthor_name(String author_name) {
-        this.author_name = author_name;
+    public void setAuthorName(String author_name) {
+        this.authorName = author_name;
     }
 
     public void setNationality(String nationality) {

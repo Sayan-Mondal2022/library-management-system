@@ -6,43 +6,35 @@ import com.library.models.Author;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AuthorDao {
-    public Author addAuthor(Author author) throws RuntimeException {
+    public int addAuthor(Author author) throws RuntimeException {
         String sql = "INSERT INTO Authors (name, nationality) VALUES (?, ?);";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, author.getAuthor_name());
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, author.getAuthorName());
             ps.setString(2, author.getNationality());
-            ps.executeUpdate();
+            int rows = ps.executeUpdate();
 
-            System.out.println("New Author has been added to the database");
-            return getLastAuthor();
+            if (rows == 0) {
+                throw new RuntimeException("Failed to insert author");
+            }
+
+            ResultSet res = ps.getGeneratedKeys();
+
+            if (!res.next())
+                throw new RuntimeException("Failed to retrieve generated ID");
+
+            return res.getInt("id");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Author getLastAuthor() throws RuntimeException {
-        String sql = "SELECT * FROM Authors ORDER BY id DESC LIMIT 1;";
-
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ResultSet res = ps.executeQuery();
-            res.next();
-
-            Author author = new Author();
-            author.setAuthor_id(res.getInt("id"));
-            author.setAuthor_name(res.getString("name"));
-            author.setNationality(res.getString("nationality"));
-
-            return author;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Author getAuthorDetails(int author_id) throws RuntimeException {
         String sql = "SELECT * FROM Authors WHERE id = ?;";
@@ -53,8 +45,8 @@ public class AuthorDao {
             res.next();
 
             Author author = new Author();
-            author.setAuthor_id(res.getInt("id"));
-            author.setAuthor_name(res.getString("name"));
+            author.setAuthorId(res.getInt("id"));
+            author.setAuthorName(res.getString("name"));
             author.setNationality(res.getString("nationality"));
 
             return author;
@@ -62,6 +54,25 @@ public class AuthorDao {
             throw new RuntimeException(e);
         }
     }
+
+    public List<String> getAllAuthorNames() throws SQLException {
+        String sql = "SELECT name FROM Authors";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet res = ps.executeQuery();
+
+            List<String> names = new ArrayList<>();
+
+            while (res.next()) {
+                names.add(res.getString("name"));
+            }
+            return names;
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 
     public List<Author> getAllAuthors() throws RuntimeException {
@@ -75,8 +86,8 @@ public class AuthorDao {
             while (res.next()) {
                 Author author = new Author();
 
-                author.setAuthor_id(res.getInt("id"));
-                author.setAuthor_name(res.getString("name"));
+                author.setAuthorId(res.getInt("id"));
+                author.setAuthorName(res.getString("name"));
                 author.setNationality(res.getString("nationality"));
 
                 authors.add(author);

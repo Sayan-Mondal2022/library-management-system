@@ -7,42 +7,33 @@ import com.library.models.Genre;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GenreDao {
-    public Genre addGenre(Genre genre) throws RuntimeException {
+    public int addGenre(Genre genre) throws RuntimeException {
         String sql = "INSERT INTO Genres (name) VALUE (?);";
 
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, genre.getGenre_name());
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, genre.getGenreName());
+            int rows = ps.executeUpdate();
 
-            ps.executeUpdate();
+            if (rows == 0)
+                throw new RuntimeException("Failed to insert Genre");
 
-            System.out.println("New Author has been added to the database");
-            return getLastGenre();
+
+            ResultSet res = ps.getGeneratedKeys();
+            if (!res.next())
+                throw new RuntimeException("Failed to retrieve generated ID");
+
+            return res.getInt("id");
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public Genre getLastGenre() throws RuntimeException {
-        String sql = "SELECT * FROM Genres ORDER BY id DESC LIMIT 1;";
-
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ResultSet res = ps.executeQuery();
-            res.next();
-
-            Genre genre = new Genre();
-            genre.setGenre_id(res.getInt("id"));
-            genre.setGenre_name(res.getString("name"));
-
-            return genre;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     public Genre getGenreDetails(int genre_id) throws RuntimeException {
         String sql = "SELECT * FROM Genres WHERE id = ?;";
@@ -53,10 +44,29 @@ public class GenreDao {
             res.next();
 
             Genre genre = new Genre();
-            genre.setGenre_id(res.getInt("id"));
-            genre.setGenre_name(res.getString("name"));
+            genre.setGenreId(res.getInt("id"));
+            genre.setGenreName(res.getString("name"));
 
             return genre;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public List<String> getAllGenreNames() throws SQLException {
+        String sql = "SELECT name FROM Genres";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet res = ps.executeQuery();
+
+            List<String> names = new ArrayList<>();
+
+            while (res.next()) {
+                names.add(res.getString("name"));
+            }
+            return names;
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -74,8 +84,8 @@ public class GenreDao {
             while (res.next()) {
                 Genre genre = new Genre();
 
-                genre.setGenre_id(res.getInt("id"));
-                genre.setGenre_name(res.getString("name"));
+                genre.setGenreId(res.getInt("id"));
+                genre.setGenreName(res.getString("name"));
 
                 genres.add(genre);
             }

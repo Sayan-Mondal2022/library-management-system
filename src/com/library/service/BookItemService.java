@@ -1,41 +1,42 @@
 package com.library.service;
 
-import com.library.dao.BookItemDao;
-import com.library.dao.BookSectionDao;
-import com.library.dao.BookShelvesDao;
+import com.library.dao.*;
+import com.library.dto.BookDto;
 import com.library.dto.BookItemDto;
 import com.library.enums.BookCondition;
 import com.library.enums.BookStatus;
 import com.library.models.BookItem;
 
+import java.sql.SQLException;
 import java.util.List;
 
 
 public class BookItemService {
-    private BookItemDao dao = new BookItemDao();
-    private BookSectionDao sectionDao = new BookSectionDao();
-    private BookShelvesDao shelvesDao = new BookShelvesDao();
+    private final BookItemDao dao = new BookItemDao();
+    private final SectionDao sectionDao = new SectionDao();
+    private final ShelvesDao shelvesDao = new ShelvesDao();
+
 
     public void addBookItem(BookItemDto dto) throws RuntimeException {
         try {
             if (dto.getIsbn() == null || dto.getIsbn().isEmpty() || dto.getBarcode() == null || dto.getBarcode().isEmpty())
                 throw new RuntimeException("Without ISBN or BARCODE a book copy is INVALID");
-            if (dto.getSection_name() == null || dto.getSection_name().isEmpty())
+            if (dto.getSectionName() == null || dto.getSectionName().isEmpty())
                 throw new RuntimeException("A book can't be added with a valid Section Name");
-            if (dto.getShelf_id() == null || dto.getShelf_id().isEmpty())
+            if (dto.getShelfId() == null || dto.getShelfId().isEmpty())
                 throw new RuntimeException("A Book can't be added without a valid Shelf id");
 
             BookItem book = new BookItem();
 
             book.setIsbn(dto.getIsbn());
             book.setBarcode(dto.getBarcode());
-            book.setBook_condition(dto.getBook_condition());
-            book.setBook_status(dto.getBook_status());
+            book.setBookCondition(dto.getBookCondition());
+            book.setBookStatus(dto.getBookStatus());
 
-            book.setShelf_id(dto.getShelf_id());
+            book.setShelfId(dto.getShelfId());
             try {
-                int section_id = sectionDao.getOrCreateSection(dto.getSection_name());
-                shelvesDao.addShelfId_SectionId(dto.getShelf_id(), section_id);
+                int section_id = sectionDao.getOrCreateSection(dto.getSectionName());
+                shelvesDao.addShelfId(dto.getShelfId(), section_id);
 
             } catch (RuntimeException e) {
                 throw new RuntimeException(e);
@@ -48,62 +49,107 @@ public class BookItemService {
         }
     }
 
-    public List<BookItemDto> getAllBookCopies(boolean is_removed) {
-        return dao.getAllBookCopies(is_removed);
+    public void deleteBookItem(String barcode) {
+        dao.deleteBookItem(barcode);
+    }
+
+    public void updateBookItem(BookItemDto updated, BookItemDto existing) throws RuntimeException {
+        try {
+            BookItem book = mergeBook(updated, existing);
+
+            if (book.getSection() == null || book.getSection().isEmpty()) {
+                throw new RuntimeException("Section name cannot be null while updating");
+            }
+
+            int section_id = sectionDao.getOrCreateSection(book.getSection());
+            shelvesDao.addShelfId(book.getShelfId(), section_id);
+            dao.updateBookItem(book);
+
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Failed to update BookItem: " + e.getMessage(), e);
+        }
+    }
+
+    private BookItem mergeBook(BookItemDto updated, BookItemDto existing) {
+        try {
+            if (existing == null)
+                throw new RuntimeException("Existing book item not found");
+
+            BookItem finalCopy = new BookItem();
+            finalCopy.setIsbn(existing.getIsbn());
+            finalCopy.setBarcode(existing.getBarcode());
+
+            finalCopy.setSection((updated.getSectionName() != null && !updated.getSectionName().isEmpty())
+                    ? updated.getSectionName()
+                    : existing.getSectionName());
+
+            finalCopy.setShelfId((updated.getShelfId() != null && !updated.getShelfId().isEmpty())
+                    ? updated.getShelfId()
+                    : existing.getShelfId());
+
+            finalCopy.setBookCondition((updated.getBookCondition() != null)
+                    ? updated.getBookCondition()
+                    : BookCondition.valueOf(existing.getCondition()));
+
+            finalCopy.setBookStatus((updated.getBookStatus() != null)
+                    ? updated.getBookStatus()
+                    : BookStatus.valueOf(existing.getStatus()));
+
+            return finalCopy;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<BookDto> getIsbnTitle() {
+        return new BookDao().getBookIsbnTitle(false);
+    }
+
+
+    public List<BookItemDto> getAllCopies(boolean is_removed) {
+        return dao.getAllCopies(is_removed);
     }
 
     public BookItemDto getBookItem(String barcode) {
         return dao.getBookItemByBarcode(barcode);
     }
 
-    public void updateBookItem(BookItemDto updated, BookItemDto existing) throws RuntimeException {
-        try {
-            if (existing == null)
-                throw new RuntimeException("Existing book item not found");
 
-            // These two values remains unchanged.
-            String isbn = existing.getIsbn();
-            String barcode = existing.getBarcode();
 
-            String sectionName = (updated.getSection_name() != null && !updated.getSection_name().isEmpty())
-                    ? updated.getSection_name()
-                    : existing.getSection_name();
+    public List<BookItemDto> getCopiesByStatus(String bookStatus) throws SQLException {
+        return dao.getCopiesByStatus(bookStatus);
+    }
 
-            String shelfId = (updated.getShelf_id() != null && !updated.getShelf_id().isEmpty())
-                    ? updated.getShelf_id()
-                    : existing.getShelf_id();
 
-            BookCondition condition = (updated.getBook_condition() != null)
-                    ? updated.getBook_condition()
-                    : BookCondition.valueOf(existing.getCondition());
+    public List<BookItemDto> getCopiesByCondition(String bookCondition) throws SQLException {
+        return dao.getCopiesByCondition(bookCondition);
+    }
 
-            BookStatus status = (updated.getBook_status() != null)
-                    ? updated.getBook_status()
-                    : BookStatus.valueOf(existing.getStatus());
 
-            // Validations
-            if (sectionName == null || sectionName.isEmpty())
-                throw new RuntimeException("Section name cannot be empty");
 
-            if (shelfId == null || shelfId.isEmpty())
-                throw new RuntimeException("Shelf ID cannot be empty");
+    public List<BookItemDto> getCopiesByAuthorName(String authorName, String bookStatus) throws SQLException {
+        return dao.getCopiesByAuthorName(authorName, bookStatus);
+    }
 
-            // Create updated BookItem model
-            BookItem book = new BookItem();
+    public List<BookItemDto> getCopiesByGenreName(String genreName, String bookStatus) throws SQLException {
+        return dao.getCopiesByGenreName(genreName, bookStatus);
+    }
 
-            book.setIsbn(isbn);
-            book.setBarcode(barcode);
-            book.setBook_condition(condition);
-            book.setBook_status(status);
-            book.setShelf_id(shelfId);
+    public List<BookItemDto> getCopiesBySectionName(String sectionName, String bookStatus) throws SQLException {
+        return dao.getCopiesBySectionName(sectionName, bookStatus);
+    }
 
-            int section_id = sectionDao.getOrCreateSection(sectionName);
-            shelvesDao.addShelfId_SectionId(shelfId, section_id);
 
-            dao.updateBookItem(book);
 
-        } catch (RuntimeException e) {
-            throw new RuntimeException("Failed to update BookItem: " + e.getMessage(), e);
-        }
+    public List<String> getAllAuthors() throws SQLException{
+        return new AuthorDao().getAllAuthorNames();
+    }
+
+    public List<String> getAllGenres() throws SQLException{
+        return new GenreDao().getAllGenreNames();
+    }
+
+    public List<String> getAllSections() throws SQLException{
+        return sectionDao.getAllSectionNames();
     }
 }

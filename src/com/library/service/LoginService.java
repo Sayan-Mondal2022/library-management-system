@@ -6,36 +6,31 @@ import com.library.models.User;
 import com.library.util.PasswordUtil;
 
 public class LoginService {
-    UserDao user = new UserDao();
+    private final UserDao userDao = new UserDao();
 
     public User loginUser(LoginRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
 
-        User user_data;
+        User userData;
 
         try {
-            user_data = user.getUser("email", email);
+            userData = userDao.getUser("email", email);
 
-            if (user_data == null) {
+            if (userData == null) {
                 throw new RuntimeException("User not found");
             }
 
-            boolean val = PasswordUtil.verifyPassword(password, user_data.getPasswordHash());
-
-            // This is used for Debugging only.
-            // System.out.println("Verification result: " + val);
+            boolean val = PasswordUtil.verifyPassword(password, userData.getPasswordHash());
 
             if (!val) {
                 throw new RuntimeException("Invalid user credentials, Please Try Again");
             }
-
-            System.out.println("\nWelcome " + user_data.getUserName() + "!");
+            return userData;
 
         } catch (Exception e) {
             throw new RuntimeException(e);
-        }
 
-        return user_data;
+        }
     }
 }

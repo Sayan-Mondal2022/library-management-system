@@ -1,46 +1,54 @@
 package com.library.dto;
 
 public class RegistrationRequest {
-    // This is for user basic details.
-    private String user_name, address, phone_no;
-
-    // This will be used for user Login and Giving access control.
-    private String email, user_type, password;
-
-
-    // Using a Constructor to assign the values all at the same time, as these values won't get changed.
-    public RegistrationRequest(String userName, String address, String email, String phoneNo, String user_type, String password){
-        this.user_name = userName;
-        this.address = address;
-        this.email = email;
-        this.phone_no = phoneNo;
-
-        this.user_type = user_type;
-        this.password = password;
-    }
-
-    // Getters for User
-    public String getPhoneNo() {
-        return this.phone_no;
-    }
+    private String userName, address, phoneNo;
+    private String email, userType, password;
 
     public String getUserName() {
-        return this.user_name;
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getAddress() {
-        return this.address;
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
     }
 
     public String getEmail() {
-        return this.email;
+        return email;
     }
 
-    public String getPassword() {
-        return this.password;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getUserType() {
-        return this.user_type;
+        return userType;
+    }
+
+    public void setUserType(String userType) {
+        this.userType = userType;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

@@ -1,7 +1,7 @@
 package com.library.dao;
 
 import com.library.db.DBConnection;
-import com.library.dto.BorrowBookApplicantsDto;
+import com.library.dto.ApplicantsDto;
 import com.library.dto.BorrowBookDto;
 import com.library.dto.BorrowResponseDto;
 import com.library.dto.FinedDetailsDto;
@@ -9,30 +9,27 @@ import com.library.enums.ApplicantStatus;
 import com.library.enums.BookStatus;
 import com.library.models.BorrowBook;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.util.ArrayList;
 
 public class BorrowBookDao {
-    public ArrayList<BorrowBookApplicantsDto> getPendingApplicants() throws RuntimeException {
+    public ArrayList<ApplicantsDto> getPendingApplicants() throws RuntimeException {
         String sql = """
-                SELECT 
-                    user_id, 
+                SELECT
+                    user_id,
                     barcode, 
                     status 
                 FROM BorrowBookApplicants 
-                WHERE status = \"PENDING\";
+                WHERE status = PENDING;
                 """;
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ResultSet res = ps.executeQuery();
 
-            ArrayList<BorrowBookApplicantsDto> applicantList = new ArrayList<>();
+            ArrayList<ApplicantsDto> applicantList = new ArrayList<>();
 
             while (res.next()) {
-                BorrowBookApplicantsDto dto = new BorrowBookApplicantsDto();
+                ApplicantsDto dto = new ApplicantsDto();
 
                 dto.setUserId(res.getInt("user_id"));
                 dto.setBarcode(res.getString("barcode"));
@@ -134,6 +131,27 @@ public class BorrowBookDao {
     }
 
 
+    private BorrowBookDto setBookDetails(ResultSet res) throws SQLException{
+        BorrowBookDto book = new BorrowBookDto();
+
+        book.setBorrowId(res.getInt("borrow_id"));
+        book.setUserId(res.getInt("user_id"));
+        book.setBarcode(res.getString("barcode"));
+        book.setIssueDate(res.getTimestamp("issue_date") != null
+                ? res.getTimestamp("issue_date").toLocalDateTime()
+                : null);
+
+        book.setDueDate(res.getTimestamp("due_date") != null
+                ? res.getTimestamp("due_date").toLocalDateTime()
+                : null);
+
+        book.setReturnDate(res.getTimestamp("return_date") != null
+                ? res.getTimestamp("return_date").toLocalDateTime()
+                : null);
+
+        return book;
+    }
+
     public ArrayList<BorrowBookDto> getAllIssuedBooks() throws RuntimeException {
         String sql = """
                 SELECT 
@@ -151,24 +169,7 @@ public class BorrowBookDao {
 
             ArrayList<BorrowBookDto> responseList = new ArrayList<>();
             while (res.next()) {
-                BorrowBookDto dto = new BorrowBookDto();
-
-                dto.setBorrowId(res.getInt("borrow_id"));
-                dto.setUserId(res.getInt("user_id"));
-                dto.setBarcode(res.getString("barcode"));
-                dto.setIssueDate(res.getTimestamp("issue_date") != null
-                        ? res.getTimestamp("issue_date").toLocalDateTime()
-                        : null);
-
-                dto.setDueDate(res.getTimestamp("due_date") != null
-                        ? res.getTimestamp("due_date").toLocalDateTime()
-                        : null);
-
-                dto.setReturnDate(res.getTimestamp("return_date") != null
-                        ? res.getTimestamp("return_date").toLocalDateTime()
-                        : null);
-
-                responseList.add(dto);
+                responseList.add(setBookDetails(res));
             }
 
             return responseList;
@@ -199,24 +200,7 @@ public class BorrowBookDao {
 
             ArrayList<BorrowBookDto> responseList = new ArrayList<>();
             while (res.next()) {
-                BorrowBookDto dto = new BorrowBookDto();
-
-                dto.setBorrowId(res.getInt("borrow_id"));
-                dto.setUserId(res.getInt("user_id"));
-                dto.setBarcode(res.getString("barcode"));
-                dto.setIssueDate(res.getTimestamp("issue_date") != null
-                        ? res.getTimestamp("issue_date").toLocalDateTime()
-                        : null);
-
-                dto.setDueDate(res.getTimestamp("due_date") != null
-                        ? res.getTimestamp("due_date").toLocalDateTime()
-                        : null);
-
-                dto.setReturnDate(res.getTimestamp("return_date") != null
-                        ? res.getTimestamp("return_date").toLocalDateTime()
-                        : null);
-
-                responseList.add(dto);
+                responseList.add(setBookDetails(res));
             }
 
             return responseList;
@@ -226,9 +210,21 @@ public class BorrowBookDao {
         }
     }
 
+
+    private BorrowBookDto setOverdueDetails(ResultSet res) throws SQLException{
+        BorrowBookDto dto = new BorrowBookDto();
+
+        dto.setBorrowId(res.getInt("borrow_id"));
+        dto.setUserId(res.getInt("user_id"));
+        dto.setBarcode(res.getString("barcode"));
+        dto.setDueDays(res.getInt("day_diff"));
+
+        return dto;
+    }
+
     public ArrayList<BorrowBookDto> getOverdueUser(int userId) throws RuntimeException {
         String sql = """
-                    SELECT 
+                    SELECT
                         borrow_id,
                         user_id,
                         barcode,
@@ -244,14 +240,7 @@ public class BorrowBookDao {
 
             ArrayList<BorrowBookDto> responseList = new ArrayList<>();
             while (res.next()) {
-                BorrowBookDto dto = new BorrowBookDto();
-
-                dto.setBorrowId(res.getInt("borrow_id"));
-                dto.setUserId(res.getInt("user_id"));
-                dto.setBarcode(res.getString("barcode"));
-                dto.setDueDays(res.getInt("day_diff"));
-
-                responseList.add(dto);
+                responseList.add(setOverdueDetails(res));
             }
 
             return responseList;
@@ -263,13 +252,13 @@ public class BorrowBookDao {
 
     public ArrayList<BorrowBookDto> getAllOverdueUsers() throws RuntimeException {
         String sql = """
-                    SELECT 
-                        borrow_id,
-                        user_id,
-                        barcode,
-                        TIMESTAMPDIFF(DAY, due_date, CURRENT_TIMESTAMP) AS day_diff
-                    FROM BorrowedBooks
-                    HAVING day_diff > 0
+                SELECT
+                    borrow_id,
+                    user_id,
+                    barcode,
+                    TIMESTAMPDIFF(DAY, due_date, CURRENT_TIMESTAMP) AS day_diff
+                FROM BorrowedBooks
+                HAVING day_diff > 0
                 """;
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -277,14 +266,7 @@ public class BorrowBookDao {
 
             ArrayList<BorrowBookDto> responseList = new ArrayList<>();
             while (res.next()) {
-                BorrowBookDto dto = new BorrowBookDto();
-
-                dto.setBorrowId(res.getInt("borrow_id"));
-                dto.setUserId(res.getInt("user_id"));
-                dto.setBarcode(res.getString("barcode"));
-                dto.setDueDays(res.getInt("day_diff"));
-
-                responseList.add(dto);
+                responseList.add(setOverdueDetails(res));
             }
 
             return responseList;
@@ -314,6 +296,25 @@ public class BorrowBookDao {
         }
     }
 
+    private FinedDetailsDto setFinedDetails(ResultSet res) throws SQLException{
+        FinedDetailsDto dto = new FinedDetailsDto();
+
+        dto.setFineId(res.getInt("fine_id"));
+        dto.setBorrowId(res.getInt("borrow_id"));
+        dto.setUserId(res.getInt("user_id"));
+        dto.setBarcode(res.getString("barcode"));
+        dto.setDueDays(res.getInt("due_days"));
+        dto.setFineAmount(res.getDouble("fine_amount"));
+        dto.setPaidAmount(res.getDouble("paid_amount"));
+        dto.setIsPaid(res.getBoolean("is_paid"));
+        dto.setReturnDate(res.getTimestamp("return_date") != null
+                ? res.getTimestamp("return_date").toLocalDateTime()
+                : null);
+
+        return dto;
+    }
+
+
     public ArrayList<FinedDetailsDto> getAllFinedUsers() throws RuntimeException {
         String sql = """
                     SELECT 
@@ -327,8 +328,7 @@ public class BorrowBookDao {
                         t1.is_paid,
                         t2.return_date
                     FROM Fines t1
-                    INNER JOIN BorrowedBooks t2 
-                        ON t1.borrow_id = t2.borrow_id
+                    INNER JOIN BorrowedBooks t2 ON t1.borrow_id = t2.borrow_id
                 """;
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -336,21 +336,7 @@ public class BorrowBookDao {
 
             ArrayList<FinedDetailsDto> list = new ArrayList<>();
             while (res.next()) {
-                FinedDetailsDto dto = new FinedDetailsDto();
-
-                dto.setFineId(res.getInt("fine_id"));
-                dto.setBorrowId(res.getInt("borrow_id"));
-                dto.setUserId(res.getInt("user_id"));
-                dto.setBarcode(res.getString("barcode"));
-                dto.setDueDays(res.getInt("due_days"));
-                dto.setFineAmount(res.getDouble("fine_amount"));
-                dto.setPaidAmount(res.getDouble("paid_amount"));
-                dto.setIsPaid(res.getBoolean("is_paid"));
-                dto.setReturnDate(res.getTimestamp("return_date") != null
-                        ? res.getTimestamp("return_date").toLocalDateTime()
-                        : null);
-
-                list.add(dto);
+                list.add(setFinedDetails(res));
             }
             return list;
 
@@ -384,21 +370,7 @@ public class BorrowBookDao {
 
             ArrayList<FinedDetailsDto> list = new ArrayList<>();
             while (res.next()) {
-                FinedDetailsDto dto = new FinedDetailsDto();
-
-                dto.setFineId(res.getInt("fine_id"));
-                dto.setBorrowId(res.getInt("borrow_id"));
-                dto.setUserId(res.getInt("user_id"));
-                dto.setBarcode(res.getString("barcode"));
-                dto.setDueDays(res.getInt("due_days"));
-                dto.setFineAmount(res.getDouble("fine_amount"));
-                dto.setPaidAmount(res.getDouble("paid_amount"));
-                dto.setIsPaid(res.getBoolean("is_paid"));
-                dto.setReturnDate(res.getTimestamp("return_date") != null
-                        ? res.getTimestamp("return_date").toLocalDateTime()
-                        : null);
-
-                list.add(dto);
+                list.add(setFinedDetails(res));
             }
             return list;
 
@@ -456,27 +428,27 @@ public class BorrowBookDao {
 
     public ArrayList<BorrowResponseDto> getBooksIssuedToUser(int userId) {
         String sql = """
-                    SELECT 
-                        t1.borrow_id,
-                        t2.barcode,
-                        t2.isbn,
-                        t3.title,
-                        t2.shelf_id,
-                        t2.book_status,
-                        t2.book_condition,
-                        t1.issue_date,
-                        t1.due_date,
-                        t1.return_date,
-                        IF(
-                            TIMESTAMPDIFF(DAY, t1.due_date, CURRENT_TIMESTAMP) > 0,
-                            TIMESTAMPDIFF(DAY, t1.due_date, CURRENT_TIMESTAMP),
-                            0
-                        ) AS due_days
-                    FROM BorrowedBooks t1
-                    INNER JOIN BookItems t2 ON t1.barcode = t2.barcode
-                    INNER JOIN Books t3 ON t2.isbn = t3.isbn
-                    WHERE t1.user_id = ?
-                    ORDER BY t1.issue_date DESC;
+                SELECT 
+                    t1.borrow_id,
+                    t2.barcode,
+                    t2.isbn,
+                    t3.title,
+                    t2.shelf_id,
+                    t2.book_status,
+                    t2.book_condition,
+                    t1.issue_date,
+                    t1.due_date,
+                    t1.return_date,
+                    IF(
+                        TIMESTAMPDIFF(DAY, t1.due_date, CURRENT_TIMESTAMP) > 0,
+                        TIMESTAMPDIFF(DAY, t1.due_date, CURRENT_TIMESTAMP),
+                        0
+                    ) AS due_days
+                FROM BorrowedBooks t1
+                INNER JOIN BookItems t2 ON t1.barcode = t2.barcode
+                INNER JOIN Books t3 ON t2.isbn = t3.isbn
+                WHERE t1.user_id = ?
+                ORDER BY t1.issue_date DESC;
                 """;
 
         try (Connection con = DBConnection.getConnection();

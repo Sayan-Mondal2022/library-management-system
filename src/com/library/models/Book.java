@@ -2,112 +2,104 @@ package com.library.models;
 
 public class Book {
     private String isbn, title;
-    private int author_id, genre_id;
-    private String author_name, genre_name;
-
-    private Integer publication_year, pages;
+    private int authorId, genreId;
+    private String authorName, genreName;
+    private Integer publicationYear, pages;
     private String publisher, edition, language, description;
 
+    public String getIsbn() {
+        return isbn;
+    }
 
-    // These are the basic details, must have in a Book Metadata
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
 
-    public void setIsbn(String isbn){
-        this.isbn = isbn;
+    public int getAuthorId() {
+        return authorId;
     }
 
-    public void setAuthor_id(int author_id) {
-        this.author_id = author_id;
+    public void setAuthorId(int authorId) {
+        this.authorId = authorId;
     }
 
-
-    public String getAuthor_name() {
-        return author_name;
+    public int getGenreId() {
+        return genreId;
     }
 
-    public void setGenre_id(int genre_id) {
-        this.genre_id = genre_id;
+    public void setGenreId(int genreId) {
+        this.genreId = genreId;
     }
 
-    public String getGenre_name() {
-        return genre_name;
+    public String getAuthorName() {
+        return authorName;
     }
 
-    // These are optional enabled when user wants to add they can add:
-    public void setPublication_year(Integer publication_year) {
-        this.publication_year = publication_year;
+    public void setAuthorName(String authorName) {
+        this.authorName = authorName;
+    }
+
+    public String getGenreName() {
+        return genreName;
+    }
+
+    public void setGenreName(String genreName) {
+        this.genreName = genreName;
+    }
+
+    public Integer getPublicationYear() {
+        return publicationYear;
+    }
+
+    public void setPublicationYear(Integer publicationYear) {
+        this.publicationYear = publicationYear;
+    }
+
+    public Integer getPages() {
+        return pages;
     }
 
     public void setPages(Integer pages) {
         this.pages = pages;
     }
 
-    public void setEdition(String edition) {
-        this.edition = edition;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public String getPublisher() {
+        return publisher;
     }
 
     public void setPublisher(String publisher) {
         this.publisher = publisher;
     }
 
+    public String getEdition() {
+        return edition;
+    }
+
+    public void setEdition(String edition) {
+        this.edition = edition;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
     public void setLanguage(String language) {
         this.language = language;
     }
 
-
-
-    // Getters:
-    public String getIsbn() {
-        return this.isbn;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
-
-    public int getAuthor_id() {
-        return this.author_id;
-    }
-
-    public int getGenre_id() {
-        return this.genre_id;
-    }
-
-    public Integer getPublication_year() {
-        return this.publication_year;
-    }
-
-    public String getPublisher() {
-        return this.publisher;
-    }
-
-    public String getEdition() {
-        return this.edition;
-    }
-
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
-    public String getLanguage() {
-        return this.language;
-    }
-
-    public Integer getPages() {
-        return this.pages;
-    }
-
-    public void setAuthor_name(String author_name) {
-        this.author_name = author_name;
-    }
-
-    public void setGenre_name(String genre_name) {
-        this.genre_name = genre_name;
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

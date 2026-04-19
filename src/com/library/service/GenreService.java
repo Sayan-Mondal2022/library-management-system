@@ -13,7 +13,7 @@ public class GenreService {
         return dao.getAllGenres();
     }
 
-    public Genre addGenre(GenreDto dto) throws RuntimeException {
+    public int addGenre(GenreDto dto) throws RuntimeException {
         if (dto.getName() == null || dto.getName().isEmpty()) {
             throw new RuntimeException("Genre name cannot be empty");
         }

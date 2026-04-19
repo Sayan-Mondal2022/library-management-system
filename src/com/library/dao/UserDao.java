@@ -6,49 +6,43 @@ import com.library.models.User;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class UserDao {
-    // This function is used to save the user data into my DB, Completing the user registration process
-    public void save(User user) throws RuntimeException{
-        Connection con = null;
-        int user_id;
+    private User setUserDetails(ResultSet res) throws SQLException {
+        User user = new User();
 
-        try {
-            // Have the DB connection established.
-            con = DBConnection.getConnection();
+        user.setUserId(res.getInt("user_id"));
+        user.setUserName(res.getString("username"));
+        user.setAddress(res.getString("address"));
+        user.setPhoneNo(res.getString("phone_no"));
+        user.setEmail(res.getString("email"));
+        user.setPasswordHash(res.getString("password_hash"));
+        user.setUserType(res.getString("user_type"));
 
-            // Once I get the User_id I will insert the data.
-            String sql = "INSERT INTO Users (username, email, phone_no, address, password_hash, user_type) VALUES (?, ?, ?, ?, ?, ?)";
+        return user;
+    }
 
-            try (PreparedStatement pstmt = con.prepareStatement(sql)) {
+    public void save(User user) throws SQLException {
+        String sql = """
+                INSERT INTO Users (username, email, phone_no, address, password_hash, user_type)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """;
 
-                pstmt.setString(1, user.getUserName());
-                pstmt.setString(2, user.getEmail());
-                pstmt.setString(3, user.getPhoneNo());
-                pstmt.setString(4, user.getAddress());
-                pstmt.setString(5, user.getPasswordHash());
-                pstmt.setString(6, user.getUserType().toUpperCase());
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, user.getUserName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getPhoneNo());
+            ps.setString(4, user.getAddress());
+            ps.setString(5, user.getPasswordHash());
+            ps.setString(6, user.getUserType().toUpperCase());
+            ps.executeUpdate();
 
-                pstmt.executeUpdate();
-
-                System.out.println("User Data has been added to the Database!");
-                System.out.println("User Registration Successful!!");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (con != null) {
-                try {
-                    con.close();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        } catch (SQLException e) {
+            throw new SQLException(e);
         }
     }
 
@@ -70,30 +64,19 @@ public class UserDao {
             if (!res.next()) {
                 throw new RuntimeException("User not found");
             }
+            return setUserDetails(res);
 
-            return new User(
-                    res.getInt("user_id"),
-                    res.getString("username"),
-                    res.getString("address"),
-                    res.getString("phone_no"),
-                    res.getString("email"),
-                    res.getString("password_hash"),
-                    res.getString("user_type")
-            );
-
-        } catch (Exception e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public List<User> getUsers(String user_type) throws Exception {
-        String sqlQuery;
+    public List<User> getUsers(String user_type) throws SQLException {
+        String sqlQuery = "SELECT * FROM Users WHERE user_type=?";
 
         if (user_type.equalsIgnoreCase("allusers"))
             sqlQuery = "SELECT * FROM Users";
-        else
-            sqlQuery = "SELECT * FROM Users WHERE user_type=?";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlQuery)) {
             List<User> userList = new ArrayList<>();
@@ -103,22 +86,13 @@ public class UserDao {
 
             ResultSet res = ps.executeQuery();
 
-            // username, address, phone_no, email, password_hash, user_type
             while (res.next()) {
-                userList.add(new User(
-                        res.getInt("user_id"),
-                        res.getString("username"),
-                        res.getString("address"),
-                        res.getString("phone_no"),
-                        res.getString("email"),
-                        res.getString("password_hash"),
-                        res.getString("user_type")
-                ));
+                userList.add(setUserDetails(res));
             }
-
             return userList;
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+
+        } catch (SQLException e) {
+            throw new SQLException(e);
         }
     }
 }
