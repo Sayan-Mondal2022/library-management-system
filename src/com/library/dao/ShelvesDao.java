@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class BookShelvesDao {
-    public void addShelfId_SectionId(String shelf_id, int section_id) throws RuntimeException {
+    public void addShelfIdSectionId(String shelf_id, int section_id) throws RuntimeException {
         String getSql = "SELECT * FROM Shelves WHERE id = ? AND section_id = ?;";
         String insertSql = "INSERT INTO Shelves (id, section_id) VALUES (?, ?);";
 
