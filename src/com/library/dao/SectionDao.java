@@ -5,8 +5,11 @@ import com.library.db.DBConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BookSectionDao {
+public class SectionDao {
     public int getOrCreateSection(String section_name) throws RuntimeException {
         String selectSql = "SELECT id, name FROM Section WHERE name = ?";
         String insertSql = "INSERT INTO Section (name) VALUES (?)";
@@ -31,6 +34,25 @@ public class BookSectionDao {
                 }
             }
             throw new RuntimeException("Failed to get or create section");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public List<String> getAllSectionNames() throws SQLException {
+        String sql = "SELECT name FROM Section";
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ResultSet res = ps.executeQuery();
+
+            List<String> names = new ArrayList<>();
+
+            while (res.next()) {
+                names.add(res.getString("name"));
+            }
+            return names;
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
