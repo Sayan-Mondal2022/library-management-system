@@ -1,6 +1,7 @@
 package com.library.dao;
 
 import com.library.db.DBConnection;
+import com.library.dto.UserDto;
 import com.library.models.User;
 
 import java.sql.Connection;
@@ -12,8 +13,8 @@ import java.util.List;
 
 
 public class UserDao {
-    private User setUserDetails(ResultSet res) throws SQLException {
-        User user = new User();
+    private UserDto setUserDetails(ResultSet res) throws SQLException {
+        UserDto user = new UserDto();
 
         user.setUserId(res.getInt("user_id"));
         user.setUserName(res.getString("username"));
@@ -26,7 +27,7 @@ public class UserDao {
         return user;
     }
 
-    public void save(User user) throws SQLException {
+    public void save(UserDto user) throws SQLException {
         String sql = """
                 INSERT INTO Users (username, email, phone_no, address, password_hash, user_type)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -47,15 +48,15 @@ public class UserDao {
     }
 
 
-    public User getUser(String query_type, String query) {
+    public UserDto getUser(String queryType, String query) {
         String sqlQuery = "SELECT * FROM Users WHERE email = ? LIMIT 1";
 
-        if (query_type.equalsIgnoreCase("id"))
+        if (queryType.equalsIgnoreCase("id"))
             sqlQuery = "SELECT * FROM Users WHERE user_id = ? LIMIT 1";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlQuery)) {
 
-            if (query_type.equalsIgnoreCase("id"))
+            if (queryType.equalsIgnoreCase("id"))
                 ps.setInt(1, Integer.parseInt(query));
             else
                 ps.setString(1, query);
@@ -72,17 +73,17 @@ public class UserDao {
     }
 
 
-    public List<User> getUsers(String user_type) throws SQLException {
+    public List<UserDto> getUsers(String userType) throws SQLException {
         String sqlQuery = "SELECT * FROM Users WHERE user_type=?";
 
-        if (user_type.equalsIgnoreCase("allusers"))
+        if (userType.equalsIgnoreCase("allusers"))
             sqlQuery = "SELECT * FROM Users";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sqlQuery)) {
-            List<User> userList = new ArrayList<>();
+            List<UserDto> userList = new ArrayList<>();
 
-            if (user_type.equalsIgnoreCase("member") || user_type.equalsIgnoreCase("librarian"))
-                ps.setString(1, user_type.toUpperCase());
+            if (userType.equalsIgnoreCase("member") || userType.equalsIgnoreCase("librarian"))
+                ps.setString(1, userType.toUpperCase());
 
             ResultSet res = ps.executeQuery();
 

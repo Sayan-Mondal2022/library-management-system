@@ -2,17 +2,17 @@ package com.library.service;
 
 import com.library.dto.LoginRequest;
 import com.library.dao.UserDao;
-import com.library.models.User;
+import com.library.dto.UserDto;
 import com.library.util.PasswordUtil;
 
 public class LoginService {
     private final UserDao userDao = new UserDao();
 
-    public User loginUser(LoginRequest request) {
+    public UserDto loginUser(LoginRequest request) {
         String email = request.getEmail();
         String password = request.getPassword();
 
-        User userData;
+        UserDto userData;
 
         try {
             userData = userDao.getUser("email", email);

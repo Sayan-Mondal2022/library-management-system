@@ -1,7 +1,7 @@
 package com.library.controller;
 
 import com.library.dto.LoginRequest;
-import com.library.models.User;
+import com.library.dto.UserDto;
 import com.library.service.LoginService;
 import com.library.util.PasswordUtil;
 
@@ -11,7 +11,7 @@ public class LoginController {
     private final LoginService loginService = new LoginService();
     private final Scanner sc = new Scanner(System.in);
 
-    public User userLogin() {
+    public UserDto userLogin() {
         LoginRequest request;
 
         while (true) {

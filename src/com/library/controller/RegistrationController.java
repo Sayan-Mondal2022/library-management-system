@@ -1,6 +1,7 @@
 package com.library.controller;
 
 import com.library.dto.RegistrationRequest;
+import com.library.dto.UserDto;
 import com.library.models.User;
 import com.library.service.RegistrationService;
 
@@ -10,7 +11,7 @@ public class RegistrationController {
     private final RegistrationService registrationService = new RegistrationService();
     private final Scanner sc = new Scanner(System.in);
 
-    public User registerUser() {
+    public UserDto registerUser() {
         RegistrationRequest request;
 
         while (true) {
