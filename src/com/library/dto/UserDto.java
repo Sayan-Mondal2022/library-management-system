@@ -3,7 +3,7 @@ package com.library.dto;
 public class UserDto {
     private int userId;
     private String userName, address, phoneNo;
-    private String email, passwordHash, userType;
+    private String email, passwordHash, userType, password;
 
     public int getUserId() {
         return userId;
@@ -43,6 +43,14 @@ public class UserDto {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPasswordHash() {
