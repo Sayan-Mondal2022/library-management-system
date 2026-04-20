@@ -21,28 +21,31 @@ public class SectionDao {
                     if (res.next()) {
                         return res.getInt("id");
                     }
-                } catch (SQLException e) {
-                    throw new SQLException("Failed to retrieve Section data", e);
                 }
             }
 
             con.setAutoCommit(false);
             try (PreparedStatement ps = con.prepareStatement(insertSql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, section_name);
-                ps.executeUpdate();
+
+                int rowAffected = ps.executeUpdate();
+                if (rowAffected == 0) {
+                    throw new SQLException("Insertion failed, no rows affected.");
+                }
 
                 try (ResultSet res = ps.getGeneratedKeys()) {
                     if (res.next()) {
                         con.commit();
                         return res.getInt("id");
+                    } else {
+                        throw new SQLException("Failed to retrieve generated keys.");
                     }
 
                 } catch (SQLException e) {
                     con.rollback();
-                    throw new SQLException("Failed to retrieve Generated keys", e);
+                    throw new SQLException("Transaction failed during Section creation", e);
                 }
             }
-            return -1;
         }
     }
 
@@ -57,7 +60,7 @@ public class SectionDao {
                 while (res.next()) {
                     names.add(res.getString("name"));
                 }
-            } catch (SQLException e){
+            } catch (SQLException e) {
                 throw new SQLException("Failed to retrieve the Section Names", e);
             }
             return names;

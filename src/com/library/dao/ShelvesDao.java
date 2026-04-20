@@ -20,8 +20,6 @@ public class ShelvesDao {
                 try(ResultSet res = ps.executeQuery()){
                     if (res.next())
                         return;
-                } catch (SQLException e){
-                    throw new SQLException("Failed to retrieve Shelves Data", e);
                 }
             }
 
@@ -31,9 +29,12 @@ public class ShelvesDao {
                 ps.setInt(2, section_id);
                 int rowsAffected = ps.executeUpdate();
 
-                if (rowsAffected > 0) {
-                    con.commit();
+                if (rowsAffected == 0) {
+                    throw new SQLException("Failed to insert shelf, no rows affected.");
                 }
+
+                con.commit();
+
             } catch (SQLException e){
                 con.rollback();
                 throw new SQLException("Transaction Failed while adding the Data into Shelves table", e);
