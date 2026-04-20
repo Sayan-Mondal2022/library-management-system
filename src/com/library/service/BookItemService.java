@@ -38,7 +38,7 @@ public class BookItemService {
                 int section_id = sectionDao.getOrCreateSection(dto.getSectionName());
                 shelvesDao.addShelfId(dto.getShelfId(), section_id);
 
-            } catch (RuntimeException e) {
+            } catch (SQLException | RuntimeException e) {
                 throw new RuntimeException(e);
             }
 
@@ -65,7 +65,7 @@ public class BookItemService {
             shelvesDao.addShelfId(book.getShelfId(), section_id);
             dao.updateBookItem(book);
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             throw new RuntimeException("Failed to update BookItem: " + e.getMessage(), e);
         }
     }
@@ -101,7 +101,7 @@ public class BookItemService {
         }
     }
 
-    public List<BookDto> getIsbnTitle() {
+    public List<BookDto> getIsbnTitle() throws SQLException{
         return new BookDao().getBookIsbnTitle(false);
     }
 
