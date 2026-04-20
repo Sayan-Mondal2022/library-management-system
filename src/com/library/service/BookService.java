@@ -2,8 +2,10 @@ package com.library.service;
 
 import com.library.dao.BookDao;
 import com.library.dto.BookDto;
+import com.library.dto.BookSummaryDto;
 import com.library.models.Book;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class BookService {
@@ -52,7 +54,7 @@ public class BookService {
         return finalBook;
     }
 
-    public void addBook(String insertType, BookDto dto) throws RuntimeException {
+    public void addBook(String insertType, BookDto dto) throws SQLException {
         Book book = new Book();
 
         book.setIsbn(dto.getIsbn());
@@ -67,49 +69,50 @@ public class BookService {
         book.setLanguage(dto.getLanguage());
         book.setDescription(dto.getDescription());
 
-        try {
-            if (insertType.equalsIgnoreCase("full"))
-                dao.librarianAddBook("full", book);
-            else
-                dao.librarianAddBook("partial", book);
 
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        if (insertType.equalsIgnoreCase("full"))
+            dao.librarianAddBook("full", book);
+        else
+            dao.librarianAddBook("partial", book);
     }
 
-    public void updateBook(BookDto existingBook, BookDto updatedBook) throws RuntimeException{
+    public void updateBook(BookDto existingBook, BookDto updatedBook) throws SQLException {
         Book finalBook = mergeBooks(existingBook, updatedBook);
         dao.librarianUpdateBook(finalBook);
     }
 
-    public List<BookDto> getAllBooks(boolean isDeleted) throws RuntimeException{
+    public List<BookDto> getAllBooks(boolean isDeleted) throws SQLException {
         return dao.getAllBooks(isDeleted);
     }
 
-    public List<BookDto> getBookIsbnTitle(boolean isDeleted) throws RuntimeException{
+    public List<BookDto> getBookIsbnTitle(boolean isDeleted) throws SQLException {
         return dao.getBookIsbnTitle(isDeleted);
     }
 
-    public BookDto getBookByIsbn(String isbn) throws RuntimeException{
+    public BookDto getBookByIsbn(String isbn) throws SQLException {
         return dao.getBookByIsbn(isbn);
     }
 
-    public void deleteBook(String isbn) throws RuntimeException{
+    public void deleteBook(String isbn) throws SQLException {
         dao.librarianDeleteBook(isbn);
     }
 
-    public List<BookDto> getBooksByAuthor(int authorId) throws RuntimeException{
+    public List<BookDto> getBooksByAuthor(int authorId) throws SQLException {
         return dao.getBooksByAuthor(authorId);
     }
 
-    public List<BookDto> getBooksByGenre(int genreId) throws RuntimeException{
+    public List<BookDto> getBooksByGenre(int genreId) throws SQLException {
         return dao.getBooksByGenre(genreId);
     }
 
 
-    public List<BookDto> getBooksByTitle(String title) throws RuntimeException{
+    public List<BookDto> getBooksByTitle(String title) throws SQLException {
         return dao.getBooksByTitle(title);
+    }
+
+
+    public BookSummaryDto getBookSummaryByIsbn(String isbn) throws SQLException {
+        return dao.getBookSummaryByIsbn(isbn);
     }
 
 }
