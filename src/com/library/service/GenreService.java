@@ -4,16 +4,17 @@ import com.library.dao.GenreDao;
 import com.library.dto.GenreDto;
 import com.library.models.Genre;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class GenreService {
     private final GenreDao dao = new GenreDao();
 
-    public List<Genre> getAllGenres() {
+    public List<GenreDto> getAllGenres() throws SQLException {
         return dao.getAllGenres();
     }
 
-    public int addGenre(GenreDto dto) throws RuntimeException {
+    public int addGenre(GenreDto dto) throws SQLException {
         if (dto.getName() == null || dto.getName().isEmpty()) {
             throw new RuntimeException("Genre name cannot be empty");
         }
@@ -24,7 +25,7 @@ public class GenreService {
         return dao.addGenre(genre);
     }
 
-    public Genre getGenre(int id) {
+    public GenreDto getGenre(int id) throws SQLException{
         return dao.getGenreDetails(id);
     }
 }
