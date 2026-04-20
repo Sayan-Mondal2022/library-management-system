@@ -151,7 +151,12 @@ public class BookDao {
                     ps.setString(9, book.getLanguage());
                     ps.setString(10, book.getDescription());
                 }
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected == 0){
+                    throw new SQLException("Failed to insert Book, no rows affected");
+                }
+
                 con.commit();
 
             } catch (SQLException e) {
@@ -204,7 +209,12 @@ public class BookDao {
 
                 ps.setString(10, book.getIsbn());
 
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected == 0){
+                    throw new SQLException("Failed to update Book, no rows affected");
+                }
+
                 con.commit();
             } catch (SQLException e) {
                 con.rollback();
@@ -222,7 +232,12 @@ public class BookDao {
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, isbn);
 
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected == 0){
+                    throw new SQLException("Failed to delete Book, no rows affected");
+                }
+
                 con.commit();
 
             } catch (SQLException e) {
