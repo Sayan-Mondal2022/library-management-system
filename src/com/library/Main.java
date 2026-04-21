@@ -2,11 +2,13 @@ package com.library;
 
 import com.library.controller.*;
 import com.library.dto.UserDto;
+import com.library.util.UserActions;
 import com.library.util.Validators;
 
 public class Main {
     public static void main(String[] args) {
         UserDto userData = null;
+        UserActions userActions = new UserActions();
 
         while (userData == null) {
             System.out.print("\nExisting user?\tEnter 1 to Login\nNew user?\tEnter 2 to Register\nWant to exit?\tEnter 3 to close!");
@@ -56,10 +58,14 @@ public class Main {
                 System.out.println("\n" + "=".repeat(54));
 
                 if (userData.getUserType().equalsIgnoreCase("librarian")) {
+                    userData = userActions.librarianOptionsList(userData);
 
                 } else if (userData.getUserType().equalsIgnoreCase("member")) {
+                    userData = userActions.memberOptionsList(userData);
 
                 }
+
+                System.out.println("\n" + "=".repeat(10) + " EXITING LIBRARY MANAGEMENT SYSTEM " + "=".repeat(9));
             }
             System.out.println("\n");
         }
