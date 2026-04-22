@@ -69,8 +69,11 @@ public class UserService {
         return dao.getUserSummary(userId);
     }
 
+    public List<UserDto> fetchNonBlacklistedUsers() throws SQLException{
+        return dao.fetchNonBlacklistedUsers();
+    }
 
-    public void blacklistUser(int userId) throws SQLException{
-        dao.blacklistUser(userId);
+    public void blacklistUser(int userId, String reason) throws SQLException{
+        dao.blacklistUser(userId, reason);
     }
 }
