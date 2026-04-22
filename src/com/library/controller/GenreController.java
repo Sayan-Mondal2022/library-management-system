@@ -5,6 +5,7 @@ import com.library.models.Genre;
 import com.library.service.GenreService;
 import com.library.util.Validators;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,51 +13,56 @@ public class GenreController {
     private final Scanner sc = new Scanner(System.in);
     private final GenreService service = new GenreService();
 
-    public void displayGenres() throws RuntimeException {
-        try {
-            List<Genre> genres = service.getAllGenres();
+    public void displayGenres() throws SQLException {
+        List<GenreDto> genres = service.getAllGenres();
 
-            System.out.println("\nAvailable Genres:");
-            for (Genre g : genres) {
-                System.out.println("Id: " + g.getGenreId() + ", name: " + g.getGenreName());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        System.out.println("\n" + "-".repeat(20) + " GENRES ARE " + "-".repeat(20));
+        for (GenreDto g : genres) {
+            System.out.println("Id: " + g.getId() + ", name: " + g.getName());
         }
+        System.out.println("-".repeat(16) + " END OF GENRES LIST " + "-".repeat(16));
     }
 
     public int selectGenre() {
         try {
             displayGenres();
-            List<Genre> genres = service.getAllGenres();
 
-            System.out.print("Add new genre? (yes/no): ");
+            System.out.print("\nAdd new genre? (yes/no): ");
             if (sc.nextLine().equalsIgnoreCase("yes")) {
 
                 GenreDto dto = new GenreDto();
 
-                System.out.print("Name: ");
+                System.out.print("Enter Genre name: ");
                 dto.setName(sc.nextLine());
 
                 System.out.println("New Genre has been added to the database");
                 return service.addGenre(dto);
             }
 
-            while (true) {
-                int id = Validators.readInt("Enter Genre ID: ");
+            return getValidGenreId();
+        } catch (SQLException | RuntimeException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
 
-                boolean exists = genres.stream()
-                        .anyMatch(a -> a.getGenreId() == id);
+        return -1;
+    }
 
-                if (!exists) {
-                    System.out.println("Invalid Genre ID! Choose from the list.");
-                    continue;
-                }
 
-                return id;
+    private int getValidGenreId() throws SQLException {
+        List<GenreDto> genres = service.getAllGenres();
+
+        while (true) {
+            int id = Validators.getValidInt("Enter Genre ID: ");
+
+            boolean exists = genres.stream()
+                    .anyMatch(a -> a.getId() == id);
+
+            if (!exists) {
+                System.out.println("Invalid Genre ID! Choose from the list.");
+                continue;
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+            return id;
         }
     }
 }

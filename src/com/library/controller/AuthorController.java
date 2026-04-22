@@ -5,6 +5,7 @@ import com.library.models.Author;
 import com.library.service.AuthorService;
 import com.library.util.Validators;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -12,30 +13,26 @@ public class AuthorController {
     private final Scanner sc = new Scanner(System.in);
     private final AuthorService service = new AuthorService();
 
-    public void displayAuthors() throws RuntimeException{
-        try {
-            List<Author> authors = service.getAllAuthors();
+    public void displayAuthors() throws SQLException {
+        List<AuthorDto> authors = service.getAllAuthors();
 
-            System.out.println("\nAvailable Authors:");
-            for (Author a : authors) {
-                System.out.println("Id: " + a.getAuthorId() + ", name:  " + a.getAuthorName());
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        System.out.println("\n" + "-".repeat(20) + " AUTHORS ARE " + "-".repeat(20));
+        for (AuthorDto a : authors) {
+            System.out.println("Id: " + a.getId() + ", name:  " + a.getName());
         }
+        System.out.println("-".repeat(16) + " END OF AUTHORS LIST " + "-".repeat(16));
     }
 
     public int selectAuthor() {
         try {
             displayAuthors();
-            List<Author> authors = service.getAllAuthors();
 
             System.out.print("\nAdd new author? (yes/no): ");
             if (sc.nextLine().equalsIgnoreCase("yes")) {
 
                 AuthorDto dto = new AuthorDto();
 
-                System.out.print("Name: ");
+                System.out.print("Enter Author name: ");
                 dto.setName(sc.nextLine());
 
                 System.out.print("Nationality: ");
@@ -44,21 +41,28 @@ public class AuthorController {
                 System.out.println("New Author has been added to the database");
                 return service.addAuthor(dto);
             }
+            return getValidAuthorId();
 
-            while (true) {
-                int id = Validators.readInt("Enter Author ID: ");
+        } catch (SQLException | RuntimeException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+        return 0;
+    }
 
-                boolean exists = authors.stream()
-                        .anyMatch(a -> a.getAuthorId() == id);
+    private int getValidAuthorId() throws SQLException{
+        List<AuthorDto> authors = service.getAllAuthors();
 
-                if (!exists) {
-                    System.out.println("Invalid Author ID! Choose from the list.");
-                    continue;
-                }
-                return id;
+        while (true) {
+            int id = Validators.getValidInt("Enter Author ID: ");
+
+            boolean exists = authors.stream()
+                    .anyMatch(a -> a.getId() == id);
+
+            if (!exists) {
+                System.out.println("Invalid Author ID! Choose from the list.");
+                continue;
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return id;
         }
     }
 
