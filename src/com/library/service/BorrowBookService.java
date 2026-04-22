@@ -3,10 +3,7 @@ package com.library.service;
 import com.library.dao.BookItemDao;
 import com.library.dao.BorrowBookDao;
 import com.library.dao.FineDao;
-import com.library.dto.ApplicantsDto;
-import com.library.dto.BorrowBookDto;
-import com.library.dto.BorrowResponseDto;
-import com.library.dto.FinedDetailsDto;
+import com.library.dto.*;
 import com.library.enums.ApplicantStatus;
 import com.library.models.BorrowBook;
 
@@ -77,12 +74,12 @@ public class BorrowBookService {
     }
 
 
-    public ArrayList<BorrowBookDto> getAllIssuedBooks() throws SQLException {
-        return dao.getAllIssuedBooks();
+    public ArrayList<BorrowBookDto> getAllIssuedBooks(UserDto userData) throws SQLException {
+        return dao.getAllIssuedBooks(userData);
     }
 
-    public ArrayList<BorrowBookDto> getIssuedBooks(boolean is_returned) throws SQLException {
-        return dao.getIssuedBooks(is_returned);
+    public ArrayList<BorrowBookDto> getIssuedBooks(UserDto userData, boolean is_returned) throws SQLException {
+        return dao.getIssuedBooks(userData, is_returned);
     }
 
 
@@ -140,20 +137,20 @@ public class BorrowBookService {
         dao.collectBook(issuedBook);
     }
 
-    public void collectFine(int borrowId) throws SQLException{
-        fineDao.collectFine(borrowId);
-    }
+    public String collectFine(int borrowId) throws SQLException{
+        int dueDays = fineDao.getDueDays(borrowId);
+        boolean isFined = fineDao.checkFine(borrowId);
 
-    public void collectFine(int borrowId, int dueDays) throws SQLException{
-        double fineAmount = dueDays * PER_DAY_CHARGE;
-        fineDao.collectFine(borrowId, fineAmount);
-    }
+        if (dueDays == 0 && !isFined)
+            return "User has no dues";
 
-    public int getDueDays(int borrowId) throws SQLException{
-        return fineDao.getDueDays(borrowId);
-    }
+        if (isFined)
+            fineDao.collectFine(borrowId);
+        else {
+            double fineAmount = dueDays * PER_DAY_CHARGE;
+            fineDao.collectFine(borrowId, fineAmount);
+        }
 
-    public boolean checkFine(int borrowId) throws SQLException {
-        return fineDao.checkFine(borrowId);
+        return "User has been fined, Fine is collected";
     }
 }
