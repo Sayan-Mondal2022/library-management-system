@@ -18,6 +18,32 @@ public class UserController {
         return sc.nextLine().trim().equalsIgnoreCase("yes");
     }
 
+    private void displaySummary(int userId) throws SQLException {
+        UserSummaryDto dto = service.getUserSummary(userId);
+
+        if (dto == null) {
+            throw new RuntimeException("USER NOT FOUND");
+        }
+
+        System.out.println("\n" + "=".repeat(18)+ " USER SUMMARY " + "=".repeat(18));
+        System.out.println("\nUser ID: " + dto.getUserId());
+        System.out.println("Name: " + dto.getUserName());
+        System.out.println("Email: " + dto.getEmail());
+        System.out.println("Phone: " + dto.getPhoneNo());
+        System.out.println("Address: " + dto.getAddress());
+        System.out.println("User Type: " + dto.getUserType());
+
+        System.out.println("Total Borrowed Books: " + dto.getTotalBorrowedBooks());
+        System.out.println("Total Returned Books: " + dto.getTotalReturnedBooks());
+
+        System.out.println("Total Fine: " + dto.getTotalFine());
+        System.out.println("Total Paid: " + dto.getTotalPaid());
+
+        System.out.println("Blacklisted: " + dto.isBlacklisted());
+        System.out.println("Reason: " + dto.getBlacklistReason());
+        System.out.println("\n" + "=".repeat(15)+ " END OF USER SUMMARY " + "=".repeat(15));
+    }
+
     private UserDto getUpdatedDetails() throws IllegalArgumentException{
         UserDto user = new UserDto();
         System.out.println("Enter (yes/no) to update the details\n");
@@ -47,7 +73,7 @@ public class UserController {
 
 
     public void updateUserDetails(UserDto userData){
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(25) + " UPDATE USER DETAILS " + "-".repeat(25));
 
         try {
             UserDto existingDetails = service.getUser(userData.getUserId());
@@ -60,36 +86,9 @@ public class UserController {
             System.out.println("\nERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
-    private void displaySummary(int userId) throws SQLException {
-        UserSummaryDto dto = service.getUserSummary(userId);
-
-        if (dto == null) {
-            System.out.println("User not found");
-            return;
-        }
-
-        System.out.println("\n" + "=".repeat(18)+ " USER SUMMARY " + "=".repeat(18));
-        System.out.println("\nUser ID: " + dto.getUserId());
-        System.out.println("Name: " + dto.getUserName());
-        System.out.println("Email: " + dto.getEmail());
-        System.out.println("Phone: " + dto.getPhoneNo());
-        System.out.println("Address: " + dto.getAddress());
-        System.out.println("User Type: " + dto.getUserType());
-
-        System.out.println("Total Borrowed Books: " + dto.getTotalBorrowedBooks());
-        System.out.println("Total Returned Books: " + dto.getTotalReturnedBooks());
-
-        System.out.println("Total Fine: " + dto.getTotalFine());
-        System.out.println("Total Paid: " + dto.getTotalPaid());
-
-        System.out.println("Blacklisted: " + dto.isBlacklisted());
-        System.out.println("Reason: " + dto.getBlacklistReason());
-        System.out.println("\n" + "=".repeat(15)+ " END OF USER SUMMARY " + "=".repeat(15));
-
-    }
 
     private int selectUserAndDisplaySummary(String fetchType) throws SQLException {
         List<UserDto> users;
@@ -100,15 +99,14 @@ public class UserController {
         displayUsers(users, "partial");
 
 
-        System.out.print("\nEnter the User Id: ");
-        int userId = Integer.parseInt(sc.nextLine());
+        int userId = Validators.getValidInt("\nEnter the User Id: ");
         displaySummary(userId);
 
         return userId;
     }
 
     public void getUserSummary(UserDto userData){
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(25) + " GET USER SUMMARY " + "-".repeat(25));
 
         try {
             if (userData.getUserType().equalsIgnoreCase("member"))
@@ -120,11 +118,11 @@ public class UserController {
             System.out.println("\nERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
     public void blacklistUser(){
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(25) + " BLACKLIST USER " + "-".repeat(25));
 
         try {
             int userId = selectUserAndDisplaySummary("nonBlacklistedUser");
@@ -143,11 +141,12 @@ public class UserController {
             System.out.println("\nERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
+
     public void getAllUsers(){
-        System.out.println("-".repeat(60));
+        System.out.println("-".repeat(25) + " GET ALL USERS " + "-".repeat(25));
 
         try {
             System.out.println("""
@@ -159,9 +158,9 @@ public class UserController {
             int choice = Validators.getValidInt("\nEnter your choice: ");
             String userType = "allusers";
 
-            if (choice == 1)
+            if (choice == 2)
                 userType = "member";
-            else if (choice == 2) {
+            else if (choice == 3) {
                 userType = "librarian";
             }
             List<UserDto> users = service.getAllUsers(userType);
@@ -171,7 +170,7 @@ public class UserController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(60));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
