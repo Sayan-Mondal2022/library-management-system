@@ -1,24 +1,21 @@
 package com.library.controller;
 
-import com.library.dao.BorrowBookDao;
-import com.library.dto.ApplicantsDto;
-import com.library.dto.BorrowBookDto;
-import com.library.dto.BorrowResponseDto;
-import com.library.dto.FinedDetailsDto;
+import com.library.dto.*;
+import com.library.service.BookItemService;
 import com.library.service.BorrowBookService;
 import com.library.util.Validators;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class BorrowBookController {
     private final Scanner sc = new Scanner(System.in);
-    BorrowBookService service = new BorrowBookService(new BorrowBookDao());
+    private final BorrowBookService service = new BorrowBookService();
 
-
-
-    public void displayApplicants(ArrayList<ApplicantsDto> applicantList) throws RuntimeException{
+    private void displayApplicants(ArrayList<ApplicantsDto> applicantList) throws RuntimeException{
         if (applicantList == null || applicantList.isEmpty()) {
             throw new RuntimeException("THERE's NO APPLICANTS RIGHT NOW");
         }
@@ -31,7 +28,7 @@ public class BorrowBookController {
         System.out.println("\n");
     }
 
-    private void displayIssuedBooks(ArrayList<BorrowBookDto> list) throws RuntimeException{
+    private void displayCopies(ArrayList<BorrowBookDto> list) throws RuntimeException{
         if (list == null || list.isEmpty()) {
             throw new RuntimeException("NO BOOKS FOUND!");
         }
@@ -116,22 +113,22 @@ public class BorrowBookController {
             }
             System.out.println("\n");
 
-            return Validators.readInt("Enter USER ID: ");
+            return Validators.getValidInt("Enter USER ID: ");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    public void getAllReturnedBooks() {
+    public void getAllReturnedBooks(UserDto userData) {
         System.out.println("-".repeat(50));
 
         try {
-            ArrayList<BorrowBookDto> list = service.getIssuedBooks(true);
-            displayIssuedBooks(list);
+            ArrayList<BorrowBookDto> list = service.getIssuedBooks(userData, true);
+            displayCopies(list);
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -139,14 +136,14 @@ public class BorrowBookController {
     }
 
 
-    public void getAllNonReturnedBooks() {
+    public void getAllNonReturnedBooks(UserDto userData) {
         System.out.println("-".repeat(50));
 
         try {
-            ArrayList<BorrowBookDto> list = service.getIssuedBooks(false);
-            displayIssuedBooks(list);
+            ArrayList<BorrowBookDto> list = service.getIssuedBooks(userData, false);
+            displayCopies(list);
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -154,14 +151,14 @@ public class BorrowBookController {
     }
 
 
-    public void getAllBorrowedBooks() {
+    public void getAllBorrowedBooks(UserDto userData) {
         System.out.println("-".repeat(50));
 
         try {
-            ArrayList<BorrowBookDto> list = service.getAllIssuedBooks();
-            displayIssuedBooks(list);
+            ArrayList<BorrowBookDto> list = service.getAllIssuedBooks(userData);
+            displayCopies(list);
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -178,7 +175,7 @@ public class BorrowBookController {
             ArrayList<ApplicantsDto> applicants = service.getPendingApplicants();
             displayApplicants(applicants);
 
-            int id = Validators.readInt("Enter USER ID: ");
+            int id = Validators.getValidInt("Enter USER ID: ");
 
             System.out.print("Enter the Book Barcode: ");
             String barcode = sc.nextLine();
@@ -187,7 +184,7 @@ public class BorrowBookController {
             dto.setUserId(id);
             dto.setBarcode(barcode);
 
-            int days = Validators.readDays("Enter borrow duration (days): ");
+            int days = Validators.getValidDays("Enter borrow duration (days): ");
             dto.setIssueDate(LocalDateTime.now());
             dto.setDueDate(dto.getIssueDate().plusDays(days));
 
@@ -195,7 +192,7 @@ public class BorrowBookController {
 
             System.out.println("Book has been issued!!");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
 
@@ -210,7 +207,7 @@ public class BorrowBookController {
             displayApplicants(applicants);
 
 
-            int id = Validators.readInt("Enter Applicant ID: ");
+            int id = Validators.getValidInt("Enter Applicant ID: ");
 
             System.out.print("Enter the Book Barcode: ");
             String barcode = sc.nextLine();
@@ -218,7 +215,7 @@ public class BorrowBookController {
             service.rejectApplicant(id, barcode);
             System.out.println("APPLICANT WITH ID-" + id + " IS REJECTED");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -233,7 +230,7 @@ public class BorrowBookController {
             service.fineAllUsers();
             System.out.println("All users with Overdue has been fined\nUpdated in DB as well");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
 
@@ -249,7 +246,7 @@ public class BorrowBookController {
             displayFinedUserDetails(responseList);
 
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -264,7 +261,7 @@ public class BorrowBookController {
             ArrayList<BorrowBookDto> responseList = service.getAllOverdueUsers();
             displayOverdueDetails(responseList);
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
 
@@ -288,7 +285,7 @@ public class BorrowBookController {
             service.fineUser(id);
             System.out.println("USER HAS BEEN FINED!");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -296,17 +293,22 @@ public class BorrowBookController {
     }
 
 
-    public void getFinedUser() {
+    public void getFinedUser(UserDto userData) {
         System.out.println("-".repeat(50));
 
         try {
-            int id = getUserId();
+            int id;
+
+            if(userData.getUserType().equalsIgnoreCase("member"))
+                id = userData.getUserId();
+            else
+                id = getUserId();
 
             ArrayList<FinedDetailsDto> responseList = service.getFinedUser(id);
             displayFinedUserDetails(responseList);
 
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -314,61 +316,34 @@ public class BorrowBookController {
     }
 
 
-    public void getUserOverdue() {
+    public void getUserOverdue(UserDto userData) {
         System.out.println("-".repeat(50));
 
         try {
-            int id = getUserId();
+            int id;
+
+            if(userData.getUserType().equalsIgnoreCase("member"))
+                id = userData.getUserId();
+            else
+                id = getUserId();
 
             ArrayList<BorrowBookDto> responseList = service.getOverdueUser(id);
             displayOverdueDetails(responseList);
 
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
         System.out.println("-".repeat(50));
     }
 
-
-    public void collectBook() {
-        System.out.println("-".repeat(50));
-
-        try {
-            ArrayList<BorrowBookDto> list = service.getIssuedBooks(false);
-            displayIssuedBooks(list);
-
-            System.out.print("\nEnter the Borrow ID: ");
-            int borrowId = Integer.parseInt(sc.nextLine());
-
-            BorrowBookDto issuedBook = null;
-            for (BorrowBookDto book : list) {
-                if (book.getBorrowId() == borrowId) {
-                    issuedBook = book;
-                    break;
-                }
-            }
-
-            if (issuedBook == null) {
-                System.out.println("ERROR: BOOK IS EITHER COLLECTED ALREADY or BOOK DATA IS INVALID");
-                return;
-            }
-            service.collectBook(issuedBook);
-            System.out.println("BOOK IS COLLECTED BACK!");
-
-        } catch (RuntimeException e) {
-            System.out.println("ERROR: " + e.getMessage());
-        }
-
-        System.out.println("-".repeat(50));
-    }
 
     public void getBooksIssuedToUser() {
         System.out.println("-".repeat(50));
 
         try {
-            int userId = Validators.readInt("Enter USER ID: ");
+            int userId = Validators.getValidInt("Enter USER ID: ");
 
             ArrayList<BorrowResponseDto> list = service.getBooksIssuedToUser(userId);
 
@@ -403,7 +378,43 @@ public class BorrowBookController {
                 System.out.println("Due Days: " + dto.getDueDays());
             }
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+
+        System.out.println("-".repeat(50));
+    }
+
+
+    public void collectBook(UserDto userData) {
+        System.out.println("-".repeat(50));
+
+        try {
+            ArrayList<BorrowBookDto> list = service.getIssuedBooks(userData, false);
+            displayCopies(list);
+
+            System.out.print("\nEnter the Borrow ID: ");
+            int borrowId = Integer.parseInt(sc.nextLine());
+
+            BorrowBookDto issuedBook = null;
+            for (BorrowBookDto book : list) {
+                if (book.getBorrowId() == borrowId) {
+                    issuedBook = book;
+                    break;
+                }
+            }
+
+            if (issuedBook == null) {
+                System.out.println("ERROR: BOOK IS EITHER COLLECTED ALREADY or BOOK DATA IS INVALID");
+                return;
+            }
+            service.collectBook(issuedBook);
+            System.out.println("BOOK IS COLLECTED BACK!");
+
+            String wasFined = service.collectFine(borrowId);
+            System.out.println(wasFined);
+
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
