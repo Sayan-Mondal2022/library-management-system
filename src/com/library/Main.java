@@ -10,6 +10,7 @@ public class Main {
         UserDto userData = null;
         UserActions userActions = new UserActions();
 
+        System.out.println("=".repeat(30) + " WELCOME TO LIBRARY MANAGEMENT SYSTEM " + "=".repeat(30) + "\n");
         while (userData == null) {
             System.out.print("\nExisting user?\tEnter 1 to Login\nNew user?\tEnter 2 to Register\nWant to exit?\tEnter 3 to close!");
             int choice = Validators.getValidInt("\nEnter your choice: ");
@@ -44,13 +45,13 @@ public class Main {
                     System.out.println("=".repeat(17) + " REGISTRATION FAILED " + "=".repeat(17));
 
             } else {
-                System.out.println("\nExiting the Library Management system...");
+                System.out.println("\n\n" + "=".repeat(30) + " EXITING LIBRARY MANAGEMENT SYSTEM " + "=".repeat(30));
                 break;
             }
 
             if (userData != null) {
-                System.out.println("\n" + "=".repeat(74));
-                System.out.println("=".repeat(18) + " WELCOME TO LIBRARY MANAGEMENT SYSTEM " + "=".repeat(18));
+                System.out.println("\n\n" + "=".repeat(74));
+                System.out.println("=".repeat(18) + " LOGGING TO LIBRARY MANAGEMENT SYSTEM " + "=".repeat(18));
 
                 System.out.println("\nGreetings! " + userData.getUserName());
                 System.out.println("User Type: '" + userData.getUserType() + "'");
@@ -65,9 +66,8 @@ public class Main {
 
                 }
 
-                System.out.println("\n" + "=".repeat(20) + " LOGGING OUT, LIBRARY MANAGEMENT SYSTEM " + "=".repeat(20));
+                System.out.println("\n" + "=".repeat(20) + " LOGGING OUT FROM LIBRARY MANAGEMENT SYSTEM " + "=".repeat(20));
             }
-            System.out.println("\n");
         }
     }
 }

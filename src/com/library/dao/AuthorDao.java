@@ -54,7 +54,7 @@ public class AuthorDao {
     }
 
     public AuthorDto getAuthorDetails(int author_id) throws SQLException {
-        String sql = "SELECT * FROM Authors WHERE id = ?;";
+        String sql = "SELECT * FROM Authors WHERE id = ? ORDER BY id ASC;";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, author_id);
@@ -70,7 +70,7 @@ public class AuthorDao {
     }
 
     public List<String> getAllAuthorNames() throws SQLException {
-        String sql = "SELECT name FROM Authors";
+        String sql = "SELECT name FROM Authors ORDER BY id ASC";
         List<String> names = new ArrayList<>();
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet res = ps.executeQuery()) {
@@ -83,7 +83,7 @@ public class AuthorDao {
 
 
     public List<AuthorDto> getAllAuthors() throws SQLException {
-        String sql = "SELECT * FROM Authors";
+        String sql = "SELECT * FROM Authors ORDER BY id ASC";
         List<AuthorDto> authors = new ArrayList<>();
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet res = ps.executeQuery()) {

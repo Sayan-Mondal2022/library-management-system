@@ -19,7 +19,7 @@ public class BookItemController {
     private BookStatus getBookStatus() {
         BookStatus status = null;
         while (true) {
-            System.out.println("Enter:\n1 -> Available\n2 -> Loaned\n3 -> Reserved\n4 -> Lost\n5 -> Damaged");
+            System.out.println("Enter:\n1 -> Available\n2 -> Issued\n3 -> Reserved\n4 -> Lost\n5 -> Damaged");
             System.out.print("Enter choice (1-5): ");
             try {
                 int choice = Integer.parseInt(sc.nextLine());
@@ -75,6 +75,7 @@ public class BookItemController {
         if (responseList.isEmpty())
             throw new RuntimeException("NO BOOKS FOUND");
 
+        System.out.println("TOTAL BOOKS RETRIEVED ARE: " + responseList.size());
         for (BookDto book : responseList) {
             System.out.println("\nBook ISBN: " + book.getIsbn());
             System.out.println("Book Title: " + book.getTitle());
@@ -86,6 +87,7 @@ public class BookItemController {
         if (books.isEmpty())
             throw new RuntimeException("BOOKs NOT FOUND");
 
+        System.out.println("TOTAL BOOKS RETRIEVED ARE: " + books.size());
         System.out.println("\nBOOKs ARE: ");
 
         for (BookItemDto book : books) {
@@ -316,6 +318,7 @@ public class BookItemController {
         if (names.isEmpty())
             throw new RuntimeException("NAMES LIST IS EMPTY");
 
+        System.out.println("TOTAL RECORDS RETRIEVED ARE: " + names.size());
         System.out.println();
         for (String name : names) {
             System.out.println("Name: " + name);

@@ -15,9 +15,9 @@ public class BorrowBookDao {
                 SELECT
                     user_id,
                     barcode,
-                    status 
-                FROM BorrowBookApplicants 
-                WHERE status = PENDING;
+                    status
+                FROM BorrowBookApplicants
+                WHERE status = "PENDING";
                 """;
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {

@@ -35,8 +35,9 @@ public class SectionDao {
 
                 try (ResultSet res = ps.getGeneratedKeys()) {
                     if (res.next()) {
+                        int id = res.getInt(1);
                         con.commit();
-                        return res.getInt("id");
+                        return id;
                     } else {
                         throw new SQLException("Failed to retrieve generated keys.");
                     }

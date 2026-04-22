@@ -20,6 +20,7 @@ public class BorrowBookController {
             throw new RuntimeException("THERE's NO APPLICANTS RIGHT NOW");
         }
 
+        System.out.println("TOTAL APPLICANTS RETRIEVED ARE: " + applicantList.size());
         System.out.println("The Applicants are: ");
         for (ApplicantsDto applicant : applicantList) {
             System.out.println("Applicant ID: " + applicant.getUserId());
@@ -33,7 +34,7 @@ public class BorrowBookController {
             throw new RuntimeException("NO BOOKS FOUND!");
         }
 
-        System.out.println("Total books retrieved are: " + list.size());
+        System.out.println("TOTAL BOOKS RETRIEVED ARE: " + list.size());
         System.out.println("Issued books are:");
 
         for (BorrowBookDto response : list) {
@@ -57,6 +58,7 @@ public class BorrowBookController {
             throw new RuntimeException("NO DATA FOUND!");
         }
 
+        System.out.println("TOTAL RECORDS RETRIEVED ARE: " + responseList.size());
         System.out.println("Total fined records: " + responseList.size());
 
         for (FinedDetailsDto dto : responseList) {
@@ -84,7 +86,7 @@ public class BorrowBookController {
             throw new RuntimeException("THERE's NO OVER DUE USERS");
         }
 
-        System.out.println("Total OverDues are: " + responseList.size());
+        System.out.println("TOTAL OVER-DUES ARES: " + responseList.size());
         System.out.println("Dues are:");
 
         for (BorrowBookDto dto : responseList) {
@@ -122,7 +124,7 @@ public class BorrowBookController {
 
 
     public void getAllReturnedBooks(UserDto userData) {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(25) + " GET RETURNED BOOKS " + "-".repeat(25));
 
         try {
             ArrayList<BorrowBookDto> list = service.getIssuedBooks(userData, true);
@@ -132,12 +134,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getAllNonReturnedBooks(UserDto userData) {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(26) + " GET NON-RETURNED BOOKS " + "-".repeat(26));
 
         try {
             ArrayList<BorrowBookDto> list = service.getIssuedBooks(userData, false);
@@ -147,12 +149,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getAllBorrowedBooks(UserDto userData) {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(25) + " GET ALL BORROWED BOOKS " + "-".repeat(25));
 
         try {
             ArrayList<BorrowBookDto> list = service.getAllIssuedBooks(userData);
@@ -162,13 +164,13 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     // This function is used to issue the book to the user, Will updates the DB.
     public void issueBook() {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " ISSUE BOOK " + "-".repeat(28));
 
         System.out.println("SELECT the APPLICANT-ID and Book BARCODE from the below list:\n");
         try {
@@ -196,11 +198,11 @@ public class BorrowBookController {
             System.err.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
     public void rejectApplicant(){
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " REJECT APPLICANT " + "-".repeat(28));
 
         try {
             ArrayList<ApplicantsDto> applicants = service.getPendingApplicants();
@@ -219,12 +221,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void fineAllUsers() {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " FINE ALL USERS " + "-".repeat(28));
 
         try {
             service.fineAllUsers();
@@ -234,12 +236,12 @@ public class BorrowBookController {
             System.err.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getAllFinedUsers() {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(26) + " GET ALL FINED USERS " + "-".repeat(26));
 
         try {
             ArrayList<FinedDetailsDto> responseList = service.getAllFinedUsers();
@@ -250,12 +252,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getAllOverdueUsers() {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(24) + " GET ALL OVER DUE USERS " + "-".repeat(24));
 
         try {
             ArrayList<BorrowBookDto> responseList = service.getAllOverdueUsers();
@@ -265,12 +267,12 @@ public class BorrowBookController {
             System.err.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void fineUser() {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " FINE USER " + "-".repeat(28));
 
         try {
             int id = getUserId();
@@ -278,6 +280,7 @@ public class BorrowBookController {
             ArrayList<BorrowBookDto> responseList = service.getOverdueUser(id);
             if (responseList.isEmpty()) {
                 System.out.println("THERE's NO OVERDUE FOR THIS USER");
+                System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
                 return;
             }
             displayOverdueDetails(responseList);
@@ -289,12 +292,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getFinedUser(UserDto userData) {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(26) + " GET FINED USER " + "-".repeat(26));
 
         try {
             int id;
@@ -312,12 +315,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getUserOverdue(UserDto userData) {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(26) + " GET OVERDUE USER " + "-".repeat(26));
 
         try {
             int id;
@@ -335,12 +338,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void getBooksIssuedToUser() {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(24) + " BOOKS ISSUED TO USER " + "-".repeat(24));
 
         try {
             int userId = Validators.getValidInt("Enter USER ID: ");
@@ -352,6 +355,7 @@ public class BorrowBookController {
                 return;
             }
 
+            System.out.println("TOTAL BOOKS RETRIEVED ARE: " + list.size());
             System.out.println("Books issued to User ID: " + userId);
 
             for (BorrowResponseDto dto : list) {
@@ -382,12 +386,12 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
     public void collectBook(UserDto userData) {
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " COLLECT BOOK " + "-".repeat(28));
 
         try {
             ArrayList<BorrowBookDto> list = service.getIssuedBooks(userData, false);
@@ -418,6 +422,6 @@ public class BorrowBookController {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 }

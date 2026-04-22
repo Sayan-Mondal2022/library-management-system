@@ -69,7 +69,7 @@ public class GenreDao {
 
 
     public List<String> getAllGenreNames() throws SQLException {
-        String sql = "SELECT name FROM Genres";
+        String sql = "SELECT name FROM Genres ORDER BY id ASC";
         List<String> names = new ArrayList<>();
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet res = ps.executeQuery()) {
@@ -82,7 +82,7 @@ public class GenreDao {
 
 
     public List<GenreDto> getAllGenres() throws SQLException {
-        String sql = "SELECT * FROM Genres";
+        String sql = "SELECT * FROM Genres ORDER BY id ASC";
         List<GenreDto> genres = new ArrayList<>();
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet res = ps.executeQuery();) {

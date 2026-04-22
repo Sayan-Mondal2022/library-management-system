@@ -73,6 +73,8 @@ public class BookController {
         if (books.isEmpty())
             throw new RuntimeException("BOOKS NOT FOUND");
 
+        System.out.println("TOTAL BOOKS RETRIEVED ARE: " + books.size());
+
         for (BookDto book : books) {
             System.out.println("\nBook ISBN: " + book.getIsbn());
             System.out.println("Book Title: " + book.getTitle());
@@ -321,6 +323,7 @@ public class BookController {
     }
 
     public void getBookSummary() {
+        System.out.println("-".repeat(25) + " GET BOOK SUMMARY " + "-".repeat(25));
         try {
             List<BookDto> books = service.getAllBooks(false);
 
@@ -337,6 +340,7 @@ public class BookController {
         } catch (SQLException | RuntimeException e) {
             System.out.println("\nERROR: " + e.getMessage());
         }
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 }

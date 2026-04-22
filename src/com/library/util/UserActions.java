@@ -23,8 +23,8 @@ public class UserActions {
                 7 -> Get books by genre name
                 8 -> Get books by book title
                 9 -> Get books summary
-                10 -> To view options again
-                11 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -40,8 +40,8 @@ public class UserActions {
                 case 7 -> controller.getBooksByGenre();
                 case 8 -> controller.getBooksByTitle();
                 case 9 -> controller.getBookSummary();
-                case 10 -> System.out.println("\n" + options);
-                case 11 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(16) + " EXITING BOOK METADATA SECTION " + "=".repeat(16));
                     return;
                 }
@@ -65,8 +65,8 @@ public class UserActions {
                 7 -> To get copies by section name
                 8 -> To get copies by book status
                 9 -> To get copies by book condition
-                10 -> To view options again
-                11 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -82,8 +82,8 @@ public class UserActions {
                 case 7 -> controller.getBooksBySectionName();
                 case 8 -> controller.getCopiesByStatus();
                 case 9 -> controller.getCopiesByCondition();
-                case 10 -> System.out.println("\n" + options);
-                case 11 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(18) + " EXITING BOOK COPY SECTION " + "=".repeat(18));
                     return;
                 }
@@ -111,8 +111,8 @@ public class UserActions {
                 11 -> To get over dues of a user
                 12 -> To fine of a user
                 13 -> To get all fines of a user
-                14 -> To To view options again
-                15 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -132,8 +132,8 @@ public class UserActions {
                 case 11 -> controller.getUserOverdue(userData);
                 case 12 -> controller.fineUser();
                 case 13 -> controller.getFinedUser(userData);
-                case 14 -> System.out.println("\n" + options);
-                case 15 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(18) + " EXITING ISSUE BOOK SECTION " + "=".repeat(18));
                     return;
                 }
@@ -152,8 +152,8 @@ public class UserActions {
                 2 -> To blacklist a user
                 3 -> To update user details
                 4 -> To get user summary
-                5 -> To view options again
-                6 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -164,8 +164,8 @@ public class UserActions {
                 case 2 -> controller.blacklistUser();
                 case 3 -> controller.updateUserDetails(userData);
                 case 4 -> controller.getUserSummary(userData);
-                case 5 -> System.out.println("\n" + options);
-                case 6 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(20) + " EXITING USER SECTION " + "=".repeat(20));
                     return;
                 }
@@ -184,7 +184,7 @@ public class UserActions {
                 2 -> To perform operations related to Book Copies (Just like Books, but it's on Copies)
                 3 -> To perform operations related to issuing books
                 4 -> To update user details
-                5 -> To Logout""";
+                51 -> To Logout""";
         System.out.println(options);
 
         while (true) {
@@ -207,7 +207,7 @@ public class UserActions {
                     userController(userData);
                     System.out.println("\n" + options);
                 }
-                case 5 -> {
+                case 51 -> {
                     System.out.println("=".repeat(18) + " EXITING LIBRARIAN SECTION " + "=".repeat(18));
                     return null;
                 }
@@ -231,8 +231,8 @@ public class UserActions {
                 3 -> Get books by genre name
                 4 -> Get books by book title
                 5 -> Get books summary
-                6 -> To view options again
-                7 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -244,8 +244,8 @@ public class UserActions {
                 case 3 -> controller.getBooksByGenre();
                 case 4 -> controller.getBooksByTitle();
                 case 5 -> controller.getBookSummary();
-                case 6 -> System.out.println("\n" + options);
-                case 7 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(16) + " EXITING BOOK METADATA SECTION " + "=".repeat(16));
                     return;
                 }
@@ -268,8 +268,8 @@ public class UserActions {
                 5 -> To get copies by section name
                 6 -> To get copies by book status
                 7 -> To get copies by book condition
-                8 -> To view options again
-                9 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -283,8 +283,8 @@ public class UserActions {
                 case 5 -> controller.getBooksBySectionName();
                 case 6 -> controller.getCopiesByStatus();
                 case 7 -> controller.getCopiesByCondition();
-                case 8 -> System.out.println("\n" + options);
-                case 9 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(18) + " EXITING BOOK COPY SECTION " + "=".repeat(18));
                     return;
                 }
@@ -305,8 +305,8 @@ public class UserActions {
                 4 -> To get all non-returned books
                 5 -> To get all over dues
                 6 -> To get all fines
-                7 -> To To view options again
-                8 -> To exit""";
+                50 -> To To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -319,8 +319,8 @@ public class UserActions {
                 case 4 -> controller.getAllNonReturnedBooks(userData);
                 case 5 -> controller.getUserOverdue(userData);
                 case 6 -> controller.getFinedUser(userData);
-                case 7 -> System.out.println("\n" + options);
-                case 8 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(18) + " EXITING ISSUE BOOK SECTION " + "=".repeat(18));
                     return;
                 }
@@ -337,8 +337,8 @@ public class UserActions {
                 Enter,
                 1 -> To update user details
                 2 -> To get user summary
-                3 -> To view options again
-                4 -> To exit""";
+                50 -> To view options again
+                51 -> To exit""";
 
         System.out.println(options);
         while (true) {
@@ -347,8 +347,8 @@ public class UserActions {
             switch (choice) {
                 case 1 -> controller.updateUserDetails(userData);
                 case 2 -> controller.getUserSummary(userData);
-                case 3 -> System.out.println("\n" + options);
-                case 4 -> {
+                case 50 -> System.out.println("\n" + options);
+                case 51 -> {
                     System.out.println("=".repeat(20) + " EXITING USER SECTION " + "=".repeat(20));
                     return;
                 }
@@ -366,7 +366,7 @@ public class UserActions {
                 2 -> To perform operations related to Book Copies (Like borrowing a book)
                 3 -> To perform operations related to Checking fines and returning a book
                 4 -> To update user details
-                5 -> To Logout""";
+                51 -> To Logout""";
 
 
         System.out.println(options);
@@ -390,7 +390,7 @@ public class UserActions {
                     aboutUser(userData);
                     System.out.println("\n" + options);
                 }
-                case 5 -> {
+                case 51 -> {
                     System.out.println("=".repeat(21) + " EXITING USER SECTION " + "=".repeat(22));
                     return null;
                 }
