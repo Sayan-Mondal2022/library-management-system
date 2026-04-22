@@ -1,10 +1,7 @@
 package com.library.dao;
 
 import com.library.db.DBConnection;
-import com.library.dto.ApplicantsDto;
-import com.library.dto.BorrowBookDto;
-import com.library.dto.BorrowResponseDto;
-import com.library.dto.FinedDetailsDto;
+import com.library.dto.*;
 import com.library.enums.ApplicantStatus;
 import com.library.enums.BookStatus;
 import com.library.models.BorrowBook;
@@ -70,11 +67,10 @@ public class BorrowBookDao {
                 con.rollback();
                 throw new SQLException("Transaction failed, while inserting book", e);
             }
-
         }
     }
 
-    public void changeBookItemStatus(Connection con, String barcode, String bookStatus) throws SQLException {
+    private void changeBookItemStatus(Connection con, String barcode, String bookStatus) throws SQLException {
         String sql = "UPDATE BookItems SET book_status = ? WHERE barcode = ? ;";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -88,7 +84,7 @@ public class BorrowBookDao {
         }
     }
 
-    public void changeApplicantStatus(Connection con, int user_id, String barcode, String applicantStatus) throws SQLException {
+    private void changeApplicantStatus(Connection con, int user_id, String barcode, String applicantStatus) throws SQLException {
         String sql = "UPDATE BorrowBookApplicants SET status = ? WHERE user_id = ? AND barcode = ? ;";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -105,7 +101,7 @@ public class BorrowBookDao {
         }
     }
 
-    public void changeApplicantStatus(int user_id, String barcode, String applicantStatus) throws SQLException {
+    public void changeApplicantStatus(int userId, String barcode, String applicantStatus) throws SQLException {
         String sql = "UPDATE BorrowBookApplicants SET status = ? WHERE user_id = ? AND barcode = ? ;";
 
         try (Connection con = DBConnection.getConnection()) {
@@ -113,7 +109,7 @@ public class BorrowBookDao {
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setString(1, applicantStatus);
-                ps.setInt(2, user_id);
+                ps.setInt(2, userId);
                 ps.setString(3, barcode);
 
                 int rowsAffected = ps.executeUpdate();
@@ -128,8 +124,6 @@ public class BorrowBookDao {
                 throw new SQLException("Transaction failed, to change applicant status", e);
 
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -155,19 +149,24 @@ public class BorrowBookDao {
         return book;
     }
 
-    public ArrayList<BorrowBookDto> getAllIssuedBooks() throws SQLException {
+    public ArrayList<BorrowBookDto> getAllIssuedBooks(UserDto userData) throws SQLException {
         String sql = """
-                SELECT 
+                SELECT
                     borrow_id, 
                     user_id, 
                     barcode, 
                     issue_date, 
                     due_date, 
                     return_date 
-                FROM BorrowedBooks;
+                FROM BorrowedBooks
                 """;
 
+        if (userData.getUserType().equalsIgnoreCase("member"))
+            sql = sql + "WHERE user_id = ?";
+
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            if (userData.getUserType().equalsIgnoreCase("member"))
+                ps.setInt(1, userData.getUserId());
 
             ArrayList<BorrowBookDto> responseList = new ArrayList<>();
             try (ResultSet res = ps.executeQuery()) {
@@ -179,7 +178,7 @@ public class BorrowBookDao {
         }
     }
 
-    public ArrayList<BorrowBookDto> getIssuedBooks(boolean is_returned) throws SQLException {
+    public ArrayList<BorrowBookDto> getIssuedBooks(UserDto userData, boolean is_returned) throws SQLException {
         String sql = """
                 SELECT
                     borrow_id, 
@@ -189,13 +188,20 @@ public class BorrowBookDao {
                     due_date, 
                     return_date 
                 FROM BorrowedBooks 
-                WHERE return_date IS NULL;
                 """;
 
         if (is_returned)
-            sql = "SELECT borrow_id, user_id, barcode, issue_date, due_date, return_date FROM BorrowedBooks WHERE return_date IS NOT NULL;";
+            sql = sql + "WHERE return_date IS NOT NULL ";
+        else
+            sql = sql + "WHERE return_date IS NULL ";
+
+        if (userData.getUserType().equalsIgnoreCase("member"))
+            sql = sql + "AND user_id = ?";
 
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            if (userData.getUserType().equalsIgnoreCase("member"))
+                ps.setInt(1, userData.getUserId());
+
             ArrayList<BorrowBookDto> responseList = new ArrayList<>();
 
             try (ResultSet res = ps.executeQuery()) {
