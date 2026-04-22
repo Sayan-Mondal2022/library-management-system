@@ -49,13 +49,13 @@ public class Main {
             }
 
             if (userData != null) {
-                System.out.println("\n" + "=".repeat(54));
-                System.out.println("=".repeat(8) + " WELCOME TO LIBRARY MANAGEMENT SYSTEM " + "=".repeat(8));
+                System.out.println("\n" + "=".repeat(74));
+                System.out.println("=".repeat(18) + " WELCOME TO LIBRARY MANAGEMENT SYSTEM " + "=".repeat(18));
 
                 System.out.println("\nGreetings! " + userData.getUserName());
                 System.out.println("User Type: '" + userData.getUserType() + "'");
 
-                System.out.println("\n" + "=".repeat(54));
+                System.out.println("\n" + "=".repeat(74));
 
                 if (userData.getUserType().equalsIgnoreCase("librarian")) {
                     userData = userActions.librarianOptionsList(userData);
@@ -65,7 +65,7 @@ public class Main {
 
                 }
 
-                System.out.println("\n" + "=".repeat(10) + " EXITING LIBRARY MANAGEMENT SYSTEM " + "=".repeat(9));
+                System.out.println("\n" + "=".repeat(20) + " LOGGING OUT, LIBRARY MANAGEMENT SYSTEM " + "=".repeat(20));
             }
             System.out.println("\n");
         }
