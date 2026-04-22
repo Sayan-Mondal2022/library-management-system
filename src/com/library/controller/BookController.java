@@ -1,12 +1,11 @@
 package com.library.controller;
 
 import com.library.dto.BookDto;
-import com.library.dto.GenreDto;
-import com.library.models.Book;
+import com.library.dto.BookSummaryDto;
 import com.library.service.BookService;
 import com.library.util.Validators;
 
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -17,41 +16,48 @@ public class BookController {
     private final GenreController genreController = new GenreController();
 
     public void addBook() {
-        System.out.println("-".repeat(50));
-        System.out.println("\nEnter Book Details:");
+        System.out.println("-".repeat(20) + " ADDING BOOK METADATA " + "-".repeat(20));
 
-        BookDto dto = new BookDto();
+        try {
+            System.out.println("\nEnter Book Details:");
 
-        System.out.print("ISBN: ");
-        dto.setIsbn(sc.nextLine());
+            BookDto dto = new BookDto();
 
-        System.out.print("Title: ");
-        dto.setTitle(sc.nextLine().trim().toLowerCase());
+            System.out.print("ISBN: ");
+            dto.setIsbn(sc.nextLine());
 
-        dto.setAuthorId(authorController.selectAuthor());
-        dto.setGenreId(genreController.selectGenre());
+            System.out.print("Title: ");
+            dto.setTitle(sc.nextLine().trim().toLowerCase());
 
-        System.out.print("Add extra metadata? (yes/no): ");
-        String addMetadata = sc.nextLine();
-        if (addMetadata.equalsIgnoreCase("yes")) {
-            fillExtraMetadata(dto);
+            dto.setAuthorId(authorController.selectAuthor());
+            dto.setGenreId(genreController.selectGenre());
+
+            System.out.print("Add extra metadata? (yes/no): ");
+            String addMetadata = sc.nextLine();
+            if (addMetadata.equalsIgnoreCase("yes")) {
+                fillExtraMetadata(dto);
+            }
+
+            if (addMetadata.equalsIgnoreCase("yes"))
+                service.addBook("full", dto);
+            else
+                service.addBook("partial", dto);
+            System.out.println("Book Added!");
+
+        } catch (SQLException | RuntimeException e) {
+            System.out.print("ERROR: " + e.getMessage());
         }
 
-        if (addMetadata.equalsIgnoreCase("yes"))
-            service.addBook("full",dto);
-        else
-            service.addBook("partial",dto);
-
-        System.out.println("Book Added!");
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(26) + " EXITING " + "-".repeat(28));
     }
 
     private void fillExtraMetadata(BookDto dto) {
+        System.out.println("\n" + "-".repeat(15) + " ADDING EXTRA METADATA " + "-".repeat(15));
         System.out.print("Publisher: ");
         dto.setPublisher(sc.nextLine());
 
-        dto.setPublicationYear(Validators.readInt("Publication Year: "));
-        dto.setPages(Validators.readInt("Pages: "));
+        dto.setPublicationYear(Validators.getValidInt("Publication Year: "));
+        dto.setPages(Validators.getValidInt("Pages: "));
 
         System.out.print("Edition: ");
         dto.setEdition(sc.nextLine());
@@ -63,15 +69,15 @@ public class BookController {
         dto.setDescription(sc.nextLine());
     }
 
-    private void displayMetadata(List<BookDto> books, String displayType) throws RuntimeException{
+    private void displayMetadata(List<BookDto> books, String displayType) {
         if (books.isEmpty())
             throw new RuntimeException("BOOKS NOT FOUND");
 
-        for (BookDto book : books){
+        for (BookDto book : books) {
             System.out.println("\nBook ISBN: " + book.getIsbn());
             System.out.println("Book Title: " + book.getTitle());
 
-            if (displayType.equalsIgnoreCase("full")){
+            if (displayType.equalsIgnoreCase("full")) {
                 System.out.println("Author Name: " + book.getAuthorName());
                 System.out.println("Genre Name: " + book.getGenreName());
 
@@ -85,37 +91,37 @@ public class BookController {
         }
     }
 
-    public void getAllBooks(){
-        System.out.println("-".repeat(50));
+    public void getAllBooks() {
+        System.out.println("-".repeat(22) + " DISPLAYING BOOKS " + "-".repeat(22));
 
-        try{
+        try {
             List<BookDto> books = service.getAllBooks(false);
             displayMetadata(books, "full");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
-    public void getAllDeletedBooks(){
-        System.out.println("-".repeat(50));
+    public void getAllDeletedBooks() {
+        System.out.println("-".repeat(22) + " DISPLAYING BOOKS " + "-".repeat(22));
 
-        try{
+        try {
             List<BookDto> books = service.getAllBooks(true);
             displayMetadata(books, "full");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
-    public void updateBook(){
-        System.out.println("-".repeat(50));
+    public void updateBook() {
+        System.out.println("-".repeat(25) + " UPDATE BOOK " + "-".repeat(25));
 
         try {
             List<BookDto> books = service.getBookIsbnTitle(false);
@@ -134,60 +140,60 @@ public class BookController {
 
             System.out.println("\nEnter 'yes' to change the details else skip");
             System.out.print("Update Book Title? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 System.out.print("Enter title: ");
                 updatedBook.setTitle(sc.nextLine());
                 System.out.println();
             }
 
             System.out.print("Update Author Name? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 updatedBook.setAuthorId(authorController.selectAuthor());
                 System.out.println();
             }
 
             System.out.print("Update Genre Name? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 updatedBook.setGenreId(genreController.selectGenre());
                 System.out.println();
             }
 
 
             System.out.print("Update Publisher? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 System.out.print("Enter Publisher: ");
                 updatedBook.setPublisher(sc.nextLine());
                 System.out.println();
             }
 
             System.out.print("Update Publication year? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
-                updatedBook.setPublicationYear(Validators.readInt("Enter Publication year: "));
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
+                updatedBook.setPublicationYear(Validators.getValidInt("Enter Publication year: "));
                 System.out.println();
             }
 
             System.out.print("Update Book Pages? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
-                updatedBook.setPages(Validators.readInt("Enter Book Pages: "));
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
+                updatedBook.setPages(Validators.getValidInt("Enter Book Pages: "));
                 System.out.println();
             }
 
             System.out.print("Update Book Edition? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 System.out.print("Book Edition: ");
                 updatedBook.setEdition(sc.nextLine());
                 System.out.println();
             }
 
             System.out.print("Update Language? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 System.out.print("Book Language: ");
                 updatedBook.setLanguage(sc.nextLine());
                 System.out.println();
             }
 
             System.out.print("Update Book Description? ");
-            if (sc.nextLine().equalsIgnoreCase("yes")){
+            if (sc.nextLine().equalsIgnoreCase("yes")) {
                 System.out.print("Book Description: ");
                 updatedBook.setDescription(sc.nextLine());
                 System.out.println();
@@ -196,15 +202,15 @@ public class BookController {
             service.updateBook(existingBook, updatedBook);
             System.out.println("\nBOOK DETAILS HAVE BEEN UPDATED");
 
-        } catch (RuntimeException e){
+        } catch (SQLException | RuntimeException e) {
             System.err.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
-    public void deleteBook(){
-        System.out.println("-".repeat(50));
+    public void deleteBook() {
+        System.out.println("-".repeat(25) + " DELETE BOOK " + "-".repeat(25));
 
         try {
             List<BookDto> books = service.getBookIsbnTitle(false);
@@ -216,55 +222,52 @@ public class BookController {
             service.deleteBook(isbn);
             System.out.println("BOOK HAS BEEN DELETED");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
-    private void getBooks(String queryType, String query){
 
-    }
-
-    public void getBooksByAuthor(){
-        System.out.println("-".repeat(50));
+    public void getBooksByAuthor() {
+        System.out.println("-".repeat(22) + " DISPLAYING BOOKS " + "-".repeat(22));
 
         try {
             authorController.displayAuthors();
-            int authorId = Validators.readInt("Enter Author Id: ");
+            int authorId = Validators.getValidInt("Enter Author Id: ");
             List<BookDto> books = service.getBooksByAuthor(authorId);
 
             displayMetadata(books, "full");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
-    public void getBooksByGenre(){
-        System.out.println("-".repeat(50));
+    public void getBooksByGenre() {
+        System.out.println("-".repeat(22) + " DISPLAYING BOOKS " + "-".repeat(22));
 
         try {
             genreController.displayGenres();
-            int genreId = Validators.readInt("Enter genreId: ");
+            int genreId = Validators.getValidInt("Enter genreId: ");
             List<BookDto> books = service.getBooksByGenre(genreId);
 
             displayMetadata(books, "full");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
 
-    public void getBooksByTitle(){
-        System.out.println("-".repeat(50));
+    public void getBooksByTitle() {
+        System.out.println("-".repeat(22) + " DISPLAYING BOOKS " + "-".repeat(22));
 
         try {
             List<BookDto> books = service.getBookIsbnTitle(false);
@@ -276,12 +279,64 @@ public class BookController {
             books = service.getBooksByTitle(title);
             displayMetadata(books, "full");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
-        System.out.println("-".repeat(50));
+        System.out.println("-".repeat(28) + " EXITING " + "-".repeat(28));
     }
 
+
+    private void displayBookSummary(String isbn) {
+        try {
+            BookSummaryDto dto = service.getBookSummaryByIsbn(isbn);
+
+            if (dto == null) {
+                System.out.println("BOOK COPIES NOT FOUND");
+                return;
+            }
+
+            System.out.println("\n" + "=".repeat(17) + " BOOK SUMMARY " + "=".repeat(17));
+            System.out.println("\nISBN: " + dto.getIsbn());
+            System.out.println("Title: " + dto.getTitle());
+            System.out.println("Author: " + dto.getAuthorName());
+            System.out.println("Genre: " + dto.getGenreName());
+
+            System.out.println("Publisher: " + dto.getPublisher());
+            System.out.println("Year: " + dto.getPublicationYear());
+            System.out.println("Pages: " + dto.getPages());
+            System.out.println("Edition: " + dto.getEdition());
+            System.out.println("Language: " + dto.getLanguage());
+
+            System.out.println("Sections: " + dto.getSectionNames());
+
+            System.out.println("Total Copies: " + dto.getTotalCopies());
+            System.out.println("Issued Copies: " + dto.getTotalCopiesIssued());
+            System.out.println("Available Copies: " + dto.getTotalAvailableCopies());
+            System.out.println("\n" + "=".repeat(14) + " END OF BOOK SUMMARY " + "=".repeat(14));
+
+        } catch (SQLException | RuntimeException e) {
+            System.out.println("\nERROR: " + e.getMessage());
+        }
+    }
+
+    public void getBookSummary() {
+        try {
+            List<BookDto> books = service.getAllBooks(false);
+
+            System.out.println("\n" + "-".repeat(18) + " DISPLAYING BOOKS " + "-".repeat(18));
+            displayMetadata(books, "partial");
+            System.out.println("\n" + "-".repeat(18) + " END OF BOOKS LIST " + "-".repeat(18));
+
+            System.out.println("\n");
+            System.out.print("Enter the Book ISBN: ");
+            String isbn = sc.nextLine();
+
+            displayBookSummary(isbn);
+
+        } catch (SQLException | RuntimeException e) {
+            System.out.println("\nERROR: " + e.getMessage());
+        }
+    }
 
 }
