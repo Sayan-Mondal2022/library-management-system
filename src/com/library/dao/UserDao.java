@@ -28,7 +28,7 @@ public class UserDao {
         return user;
     }
 
-    public void save(UserDto user) throws SQLException {
+    public UserDto save(UserDto user) throws SQLException {
         String sql = """
                 INSERT INTO Users (username, email, phone_no, address, password_hash, user_type)
                 VALUES (?, ?, ?, ?, ?, ?)
@@ -37,7 +37,7 @@ public class UserDao {
         try (Connection con = DBConnection.getConnection()) {
             con.setAutoCommit(false);
 
-            try (PreparedStatement ps = con.prepareStatement(sql)) {
+            try (PreparedStatement ps = con.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, user.getUserName());
                 ps.setString(2, user.getEmail());
                 ps.setString(3, user.getPhoneNo());
@@ -50,8 +50,17 @@ public class UserDao {
                 if (rowsAffected == 0) {
                     throw new SQLException("Failed to insert user, no rows affected.");
                 }
-                con.commit();
 
+                try (ResultSet res = ps.getGeneratedKeys()) {
+                    if (res.next()) {
+                        con.commit();
+                        user.setUserId(res.getInt(1));
+
+                        return user;
+                    } else {
+                        throw new SQLException("Failed to retrieve generated ID.");
+                    }
+                }
             } catch (SQLException e) {
                 con.rollback();
                 throw new SQLException("Transaction failed, while inserting User details", e);
@@ -209,10 +218,38 @@ public class UserDao {
     }
 
 
-    public void blacklistUser(int userId) throws SQLException {
+    public List<UserDto> fetchNonBlacklistedUsers() throws SQLException{
+        String sql = """
+                SELECT user_id, username
+                FROM Users
+                WHERE is_blacklisted = FALSE;
+                """;
+
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            List<UserDto> userList = new ArrayList<>();
+
+            try (ResultSet res = ps.executeQuery()) {
+                while (res.next()) {
+                    UserDto dto = new UserDto();
+
+                    dto.setUserId(res.getInt("user_id"));
+                    dto.setUserName(res.getString("username"));
+
+                    userList.add(dto);
+                }
+            } catch (SQLException e) {
+                throw new SQLException("Failed to retrieve User Details", e);
+            }
+            return userList;
+        }
+    }
+
+    public void blacklistUser(int userId, String reason) throws SQLException {
         String sql = """
                 UPDATE Users SET
-                is_blacklisted = TRUE
+                is_blacklisted = TRUE,
+                blacklist_reason = ?,
+                blacklisted_at = CURRENT_TIMESTAMP
                 WHERE user_id = ?
                 """;
 
@@ -220,7 +257,9 @@ public class UserDao {
             con.setAutoCommit(false);
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
-                ps.setInt(1, userId);
+                ps.setString(1, reason);
+                ps.setInt(2, userId);
+
                 int rowsAffected = ps.executeUpdate();
 
                 if (rowsAffected == 0) {
