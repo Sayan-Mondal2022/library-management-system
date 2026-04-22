@@ -152,4 +152,8 @@ public class BookItemService {
     public List<String> getAllSections() throws SQLException{
         return sectionDao.getAllSectionNames();
     }
+
+    public void borrowBook(int userId, String barcode) throws SQLException{
+        dao.borrowBook(userId, barcode);
+    }
 }
