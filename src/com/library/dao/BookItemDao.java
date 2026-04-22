@@ -312,4 +312,29 @@ public class BookItemDao {
         return getBookCopiesByCategory("author", authorName, bookStatus);
     }
 
+
+    public void borrowBook(int userId, String barcode) throws SQLException{
+        String sql = "INSERT INTO BorrowBookApplicants (user_id, barcode) VALUES (?, ?);";
+
+        try (Connection con = DBConnection.getConnection()) {
+            con.setAutoCommit(false);
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, userId);
+                ps.setString(2, barcode);
+
+                int rowsAffected = ps.executeUpdate();
+
+                if (rowsAffected == 0)
+                    throw new SQLException("Failed to insert, no rows affected");
+                else
+                    con.commit();
+
+            } catch (SQLException e) {
+                con.rollback();
+                throw new SQLException("Transaction failed, to insert applicant data", e);
+
+            }
+        }
+    }
 }
