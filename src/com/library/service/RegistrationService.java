@@ -22,7 +22,7 @@ public class RegistrationService {
             user.setUserType(request.getUserType());
             user.setPasswordHash(PasswordUtil.hashPassword(request.getPassword()));
 
-            userDao.save(user);
+            user = userDao.save(user);
             return user;
 
         } catch (SQLException | RuntimeException e) {
