@@ -14,6 +14,7 @@ import java.util.List;
 
 
 public class BookDao {
+    // This function is to set the Book details
     private BookDto setDetails(ResultSet res) throws SQLException {
         BookDto newBook = new BookDto();
 
@@ -39,6 +40,10 @@ public class BookDao {
     }
 
 
+    /* This is a helper function,
+        returns a List of BookSto,
+        called internally by getBooksByAuthor(), getBooksByGenre(), getBooksByTitle()
+    */
     private List<BookDto> getBooksByCategory(String categoryType, String query) throws SQLException {
         String sql = """
                 SELECT
@@ -96,7 +101,38 @@ public class BookDao {
         return getBooksByCategory("title", title);
     }
 
+    public List<BookDto> getAllBooks(boolean isDeleted) throws SQLException {
+        String sql = """
+                SELECT
+                    t1.*,
+                    t2.name AS author_name,
+                    t3.name AS genre_name
+                FROM Books t1
+                JOIN Authors t2
+                    ON t1.author_id = t2.id
+                JOIN Genres t3
+                    ON t1.genre_id = t3.id
+                WHERE t1.is_deleted = ?;
+                """;
 
+        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setBoolean(1, isDeleted);
+
+            List<BookDto> bookList = new ArrayList<>();
+            try (ResultSet res = ps.executeQuery()) {
+                while (res.next()) {
+                    BookDto newBook = setDetails(res);
+                    bookList.add(newBook);
+                }
+            } catch (SQLException e) {
+                throw new SQLException("Failed to retrieve Books data", e);
+            }
+            return bookList;
+
+        }
+    }
+
+    // This function is used to get the Books details based on the ISBN
     public BookDto getBookByIsbn(String isbn) throws SQLException {
         String sql = """
                 SELECT
@@ -125,6 +161,7 @@ public class BookDao {
     }
 
 
+    // To add book into the DB
     public void librarianAddBook(String insertType, Book book) throws SQLException {
         String sql = "INSERT INTO books (isbn, title, author_id, genre_id) VALUES (?, ?, ?, ?)";
 
@@ -153,7 +190,7 @@ public class BookDao {
                 }
                 int rowsAffected = ps.executeUpdate();
 
-                if (rowsAffected == 0){
+                if (rowsAffected == 0) {
                     throw new SQLException("Failed to insert Book, no rows affected");
                 }
 
@@ -211,7 +248,7 @@ public class BookDao {
 
                 int rowsAffected = ps.executeUpdate();
 
-                if (rowsAffected == 0){
+                if (rowsAffected == 0) {
                     throw new SQLException("Failed to update Book, no rows affected");
                 }
 
@@ -234,7 +271,7 @@ public class BookDao {
 
                 int rowsAffected = ps.executeUpdate();
 
-                if (rowsAffected == 0){
+                if (rowsAffected == 0) {
                     throw new SQLException("Failed to delete Book, no rows affected");
                 }
 
@@ -255,7 +292,7 @@ public class BookDao {
             ps.setBoolean(1, isDeleted);
 
             List<BookDto> list = new ArrayList<>();
-            try (ResultSet res = ps.executeQuery()){
+            try (ResultSet res = ps.executeQuery()) {
                 while (res.next()) {
                     BookDto book = new BookDto();
 
@@ -265,42 +302,12 @@ public class BookDao {
                     list.add(book);
                 }
             } catch (SQLException e) {
-                throw new SQLException("Failed to retrieve the Book data",e);
+                throw new SQLException("Failed to retrieve the Book data", e);
             }
             return list;
         }
     }
 
-    public List<BookDto> getAllBooks(boolean isDeleted) throws SQLException {
-        String sql = """
-                SELECT
-                    t1.*,
-                    t2.name AS author_name,
-                    t3.name AS genre_name
-                FROM Books t1
-                JOIN Authors t2
-                    ON t1.author_id = t2.id
-                JOIN Genres t3
-                    ON t1.genre_id = t3.id
-                WHERE t1.is_deleted = ?;
-                """;
-
-        try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setBoolean(1, isDeleted);
-
-            List<BookDto> bookList = new ArrayList<>();
-            try (ResultSet res = ps.executeQuery()){
-                while (res.next()) {
-                    BookDto newBook = setDetails(res);
-                    bookList.add(newBook);
-                }
-            } catch (SQLException e){
-                throw new SQLException("Failed to retrieve Books data", e);
-            }
-            return bookList;
-
-        }
-    }
 
     public BookSummaryDto getBookSummaryByIsbn(String isbn) throws SQLException {
         String sql = """
@@ -347,8 +354,7 @@ public class BookDao {
         try (Connection con = DBConnection.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, isbn);
 
-            try (ResultSet res = ps.executeQuery())
-            {
+            try (ResultSet res = ps.executeQuery()) {
                 if (res.next()) {
                     BookSummaryDto dto = new BookSummaryDto();
 
