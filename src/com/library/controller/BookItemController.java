@@ -2,6 +2,7 @@ package com.library.controller;
 
 import com.library.dto.BookDto;
 import com.library.dto.BookItemDto;
+import com.library.dto.UserDto;
 import com.library.enums.BookCondition;
 import com.library.enums.BookStatus;
 import com.library.service.BookItemService;
@@ -25,7 +26,7 @@ public class BookItemController {
 
                 status = switch (choice) {
                     case 1 -> BookStatus.AVAILABLE;
-                    case 2 -> BookStatus.LOANED;
+                    case 2 -> BookStatus.ISSUED;
                     case 3 -> BookStatus.RESERVED;
                     case 4 -> BookStatus.LOST;
                     case 5 -> BookStatus.DAMAGED;
@@ -103,7 +104,7 @@ public class BookItemController {
         }
     }
 
-    private void getBookItemDetails() throws RuntimeException {
+    private void getBookItemDetails() throws SQLException {
         System.out.println("Select the ISBN from the given below books:");
         try {
             List<BookDto> responseList = service.getIsbnTitle();
@@ -157,7 +158,7 @@ public class BookItemController {
             } else
                 System.out.println("INVALID INPUT");
 
-        } catch (RuntimeException e) {
+        } catch (SQLException | RuntimeException e) {
             System.out.println("ERROR: " + e.getMessage());
         }
 
@@ -378,5 +379,37 @@ public class BookItemController {
 
     public void getBooksBySectionName() {
         getNameResponse("section");
+    }
+
+
+    public void borrowBook(UserDto userData) {
+        System.out.println("-".repeat(60));
+
+        try {
+            List<BookItemDto> books = service.getCopiesByStatus(BookStatus.AVAILABLE.toString());
+
+            System.out.println("\n" + "-".repeat(18) + " DISPLAYING BOOKS " + "-".repeat(18));
+            displayCopies(books);
+            System.out.println("\n" + "-".repeat(18) + " END OF BOOKS LIST " + "-".repeat(18));
+
+            System.out.print("\nEnter the barcode: ");
+            String barcode = sc.nextLine();
+
+            for (BookItemDto book : books){
+                if (book.getBarcode().equalsIgnoreCase(barcode.toLowerCase())){
+                    service.borrowBook(userData.getUserId(), barcode);
+                    System.out.println("Book has been applied, to get the approval");
+                    return;
+                }
+            }
+
+            System.out.println("Invalid barcode!");
+
+
+        } catch (SQLException | RuntimeException e) {
+            System.out.println("ERROR: " + e.getMessage());
+        }
+
+        System.out.println("-".repeat(60));
     }
 }
