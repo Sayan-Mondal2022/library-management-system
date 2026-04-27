@@ -63,7 +63,7 @@ public class BorrowBookDao {
                 }
                 con.commit();
 
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 con.rollback();
                 throw new SQLException("Transaction failed, while inserting book", e);
             }
@@ -249,9 +249,9 @@ public class BorrowBookDao {
                 }
 
                 con.commit();
-            } catch (Exception e) {
+            } catch (SQLException e) {
                 con.rollback();
-                throw new RuntimeException("TRANSACTION FAILED");
+                throw new SQLException("TRANSACTION FAILED");
 
             }
         }
